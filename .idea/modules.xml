@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hyperskill-amazing-numbers.iml" filepath="$PROJECT_DIR$/.idea/modules/hyperskill-amazing-numbers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task1/hyperskill-amazing-numbers.Amazing_Numbers_I-task1.iml" filepath="$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task1/hyperskill-amazing-numbers.Amazing_Numbers_I-task1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task1/hyperskill-amazing-numbers.Amazing_Numbers_I-task1.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task1/hyperskill-amazing-numbers.Amazing_Numbers_I-task1.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task1/hyperskill-amazing-numbers.Amazing_Numbers_I-task1.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task1/hyperskill-amazing-numbers.Amazing_Numbers_I-task1.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task2/hyperskill-amazing-numbers.Amazing_Numbers_I-task2.iml" filepath="$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task2/hyperskill-amazing-numbers.Amazing_Numbers_I-task2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task2/hyperskill-amazing-numbers.Amazing_Numbers_I-task2.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task2/hyperskill-amazing-numbers.Amazing_Numbers_I-task2.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task2/hyperskill-amazing-numbers.Amazing_Numbers_I-task2.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Amazing Numbers I/task2/hyperskill-amazing-numbers.Amazing_Numbers_I-task2.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/hyperskill-amazing-numbers.util.iml" filepath="$PROJECT_DIR$/.idea/modules/util/hyperskill-amazing-numbers.util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/hyperskill-amazing-numbers.util.main.iml" filepath="$PROJECT_DIR$/.idea/modules/util/hyperskill-amazing-numbers.util.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/hyperskill-amazing-numbers.util.test.iml" filepath="$PROJECT_DIR$/.idea/modules/util/hyperskill-amazing-numbers.util.test.iml" />
+    </modules>
+  </component>
+</project>

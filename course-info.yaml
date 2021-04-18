@@ -1,0 +1,11 @@
+type: hyperskill
+title: hyperskill-amazing-numbers
+language: English
+summary: We use numbers every day. But do you know how many different and amazing
+  properties they have? In this project we will tell you about some of these properties.
+  You will learn how to determine whether a number is a palindrome or an armstrong
+  number, you will be able to identify spy numbers from a range of numbers, and you
+  will also learn about many other interesting properties of natural numbers.
+programming_language: Java
+content:
+- Amazing Numbers I
