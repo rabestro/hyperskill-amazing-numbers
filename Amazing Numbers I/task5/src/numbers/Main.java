@@ -17,6 +17,7 @@ public class Main {
             }
             if (start < 0) {
                 System.out.println("This number is not natural!");
+                continue;
             }
             if (data.length == 1) {
                 System.out.print(NumberProperties.fullProperties(start));
