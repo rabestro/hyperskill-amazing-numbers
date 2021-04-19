@@ -8,11 +8,12 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        main:
         while (true) {
             System.out.printf("%nEnter a natural number: ");
-            final var data = scanner.nextLine().split(" ");
+            final var data = scanner.nextLine().toUpperCase().split(" ");
             System.out.println();
-            final var start = Long.parseLong(data[0]);
+            final var start = getNaturalNumber(data[0]);
             if (start == 0) {
                 break;
             }
@@ -24,7 +25,7 @@ public class Main {
                 System.out.print(NumberProperties.fullProperties(start));
                 continue;
             }
-            final var count = Long.parseLong(data[1]);
+            final var count = getNaturalNumber(data[1]);
             if (count < 1) {
                 System.out.println("The count should be greater then zero.");
                 continue;
@@ -33,15 +34,19 @@ public class Main {
                 LongStream.range(start, start + count).forEach(Main::printProperties);
                 continue;
             }
-            final var property = data[2].toUpperCase();
-            final var notFound = NumberProperties.stream().map(Enum::name).noneMatch(property::equals);
-            if (notFound) {
-                System.out.printf("The property '%s' is incorrect", property);
-                continue;
+            LongPredicate property = number -> true;
+            for (int i = 2; i < data.length; ++i) {
+                final var notFound = NumberProperties.stream()
+                        .map(Enum::name)
+                        .noneMatch((data[i]::equals));
+                if (notFound) {
+                    System.out.printf("The property '%s' is incorrect", data[i]);
+                    continue main;
+                }
+                property = property.and(NumberProperties.valueOf(data[i]));
             }
-            final var condition = NumberProperties.valueOf(property);
             LongStream.iterate(start, n -> n + 1)
-                    .filter(condition)
+                    .filter(property)
                     .limit(count)
                     .forEach(Main::printProperties);
         }
@@ -49,5 +54,12 @@ public class Main {
 
     private static void printProperties(long number) {
         System.out.printf("%,16d is %s%n", number, NumberProperties.shortProperties(number));
+    }
+
+    private static long getNaturalNumber(final String input) {
+        if (input.isBlank() || !input.chars().allMatch(Character::isDigit)) {
+            return -1;
+        }
+        return Long.parseLong(input);
     }
 }

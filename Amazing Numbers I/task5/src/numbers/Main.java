@@ -11,7 +11,7 @@ public class Main {
             System.out.printf("%nEnter a natural number: ");
             final var data = scanner.nextLine().split(" ");
             System.out.println();
-            final var start = Long.parseLong(data[0]);
+            final var start = getNaturalNumber(data[0]);
             if (start == 0) {
                 break;
             }
@@ -23,13 +23,29 @@ public class Main {
                 System.out.print(NumberProperties.fullProperties(start));
                 continue;
             }
-            final var count = Long.parseLong(data[1]);
+            final var count = getNaturalNumber(data[1]);
             if (count < 1) {
-                System.out.println("The count should be greater then zero.");
+                System.out.println("The count should be natural number.");
                 continue;
             }
             LongStream.range(start, start + count).forEach(Main::printProperties);
         }
+    }
+
+    private static long getNaturalNumber(final String input) {
+//        if (input.isBlank() || !input.chars().allMatch(Character::isDigit)) {
+//            return -1;
+//        }
+
+        if (input.isBlank()) {
+            return -1;
+        }
+        for (final char symbol: input.toCharArray()) {
+            if (!Character.isDigit(symbol)) {
+                return -1;
+            }
+        }
+        return Long.parseLong(input);
     }
 
     private static void printProperties(long number) {
