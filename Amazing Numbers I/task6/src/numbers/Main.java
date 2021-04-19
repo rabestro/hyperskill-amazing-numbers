@@ -28,7 +28,15 @@ public class Main {
                 System.out.println("The count should be greater then zero.");
                 continue;
             }
-            LongStream.range(start, start + count).forEach(Main::printProperties);
+            if (data.length == 2) {
+                LongStream.range(start, start + count).forEach(Main::printProperties);
+                continue;
+            }
+            final var property = NumberProperties.valueOf(data[2].toUpperCase());
+            LongStream.iterate(start, n -> n + 1)
+                    .filter(property)
+                    .limit(count)
+                    .forEach(Main::printProperties);
         }
     }
 
