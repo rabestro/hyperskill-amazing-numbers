@@ -33,7 +33,10 @@ public class Main {
                 LongStream.range(start, start + count).forEach(Main::printProperties);
                 continue;
             }
-            final var property = NumberProperties.valueOf(data[2].toUpperCase());
+            LongPredicate property = number -> true;
+            for (int i = 2; i < data.length; ++i) {
+                property = property.and(NumberProperties.valueOf(data[i].toUpperCase()));
+            }
             LongStream.iterate(start, n -> n + 1)
                     .filter(property)
                     .limit(count)
