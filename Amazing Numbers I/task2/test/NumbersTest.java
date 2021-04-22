@@ -5,13 +5,91 @@ import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+final class TextChecker {
+    String key;
+    String regexp;
+    String feedback;
+    int flags;
+
+    private static final class Checker implements Predicate<String> {
+        final Pattern expected;
+        final String feedback;
+
+        Checker(final Pattern expected, final String feedback) {
+            this.expected = expected;
+            this.feedback = feedback;
+        }
+
+        @Override
+        public boolean test(String actual) {
+            return expected.matcher(actual).find();
+        }
+
+        String getFeedback(Object... args) {
+            return MessageFormat.format(feedback, args);
+        }
+    }
+
+    private final Map<String, Checker> map = new HashMap<>();
+
+    public TextChecker add(Consumer<TextChecker> builderFunction) {
+        flags = Pattern.CASE_INSENSITIVE;
+        builderFunction.accept(this);
+        map.put(key, new Checker(Pattern.compile(regexp, flags), feedback));
+        return this;
+    }
+
+    public void check(String key, String actual, Object... args) {
+        final var checker = map.get(key);
+        if (checker.test(actual)) {
+            return;
+        }
+        throw new WrongAnswer(checker.getFeedback(args));
+    }
+}
 
 public class NumbersTest extends StageTest {
 
-    private static final Pattern ERROR_MESSAGE = Pattern.compile(
-            "(this|the) number is( not|n't) natural",
-            Pattern.CASE_INSENSITIVE);
+    private static final TextChecker checker = new TextChecker()
+            .add($ -> {
+                $.key = "not-natural";
+                $.regexp = "(this|the) number is( not|n't) natural";
+                $.feedback = "Number {0} is not natural. Expected error message.";
+            })
+            .add($ -> {
+                $.key = "is-buzz-number";
+                $.regexp = "is(?: a| the)? buzz( number)?";
+                $.feedback = "Not found message that {0} is a Buzz number.";
+            })
+            .add($ -> {
+                $.key = "is-not-buzz-number";
+                $.regexp = "is( not|n't)(?: a| the)? buzz( number)?";
+                $.feedback = "Not found message that {0} is not a Buzz number.";
+            })
+            .add($ -> {
+                $.key = "is-divisible";
+                $.regexp = "is divisible by";
+                $.feedback = "Not found message that {0} is divisible by 7";
+                $.flags += Pattern.LITERAL;
+            })
+            .add($ -> {
+                $.key = "is-ends-with";
+                $.regexp = "(is|it) ends with";
+                $.feedback = "Not found message that {0} is ends with 7";
+            })
+            .add($ -> {
+                $.key = "is-neither";
+                $.regexp = "is neither divisible by 7 nor it ends with 7";
+                $.feedback = "Not found message that {0} is is neither divisible by 7 nor it ends with 7";
+                $.flags += Pattern.LITERAL;
+            });
+
 
     private static final Pattern IS_BUZZ_NUMBER = Pattern.compile(
             "is(?: a| the)? buzz( number)?", Pattern.CASE_INSENSITIVE);
@@ -60,8 +138,7 @@ public class NumbersTest extends StageTest {
 
         final var actual = program.execute(String.valueOf(number));
 
-        assertTrue(ERROR_MESSAGE.matcher(actual).find(),
-                "Number {0} is not natural. Expected error message.", number);
+        checker.check("not-natural", actual, number);
 
         assertTrue(program.isFinished(),
                 "Program should finish after printing the error message.");
