@@ -90,23 +90,14 @@ public class NumbersTest extends StageTest {
                 $.regexp = "is neither divisible by 7 nor it ends with 7";
                 $.feedback = "Not found message that {0} is is neither divisible by 7 nor it ends with 7";
                 $.flags += Pattern.LITERAL;
+            })
+            .add($ -> {
+                $.key = "enter-number";
+                $.regexp = "natural number";
+                $.feedback = "The program should ask for a natural number.";
+                $.flags += Pattern.LITERAL;
             });
 
-
-    private static final Pattern IS_BUZZ_NUMBER = Pattern.compile(
-            "is(?: a| the)? buzz( number)?", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_NOT_BUZZ = Pattern.compile(
-            "is( not|n't)(?: a| the)? buzz( number)?", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_DIVISIBLE = Pattern.compile(
-            "is divisible by", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_ENDS_WITH = Pattern.compile(
-            "(is|it) ends with", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_NEITHER = Pattern.compile(
-            "is neither divisible by 7 nor it ends with 7", Pattern.CASE_INSENSITIVE);
 
     private final long[] number = {1, 2, 3, 4, 5, 9_223_372_036_854_775_807L};
 
@@ -114,8 +105,7 @@ public class NumbersTest extends StageTest {
     CheckResult simpleTest(final long number) {
         final var program = new TestedProgram();
 
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
+        checker.check("enter-number", program.start());
 
         final var expected = number % 2 == 0 ? "even" : "odd";
         final var actual = program.execute(String.valueOf(number)).toLowerCase();
@@ -135,8 +125,7 @@ public class NumbersTest extends StageTest {
     CheckResult incorrectNumbers(final long number) {
         final var program = new TestedProgram();
 
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
+        checker.check("enter-number", program.start());
 
         final var actual = program.execute(String.valueOf(number));
 
@@ -154,16 +143,12 @@ public class NumbersTest extends StageTest {
     CheckResult divisibleNumbers(final long number) {
         final var program = new TestedProgram();
 
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
+        checker.check("enter-number", program.start());
 
         final var actual = program.execute(String.valueOf(number));
 
-        assertTrue(IS_BUZZ_NUMBER.matcher(actual).find(),
-                "Not found message that {0} is a Buzz number.", number);
-
-        assertTrue(IS_DIVISIBLE.matcher(actual).find(),
-                "Not found message that {0} is divisible by 7", number);
+        checker.check("is-buzz-number", actual, number);
+        checker.check("is-divisible", actual, number);
 
         assertTrue(program.isFinished(),
                 "Program should finish after printing the error message.");
@@ -177,16 +162,12 @@ public class NumbersTest extends StageTest {
     CheckResult endsWith7Numbers(final long number) {
         final var program = new TestedProgram();
 
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
+        checker.check("enter-number", program.start());
 
         final var actual = program.execute(String.valueOf(number));
 
-        assertTrue(IS_BUZZ_NUMBER.matcher(actual).find(),
-                "Not found message that {0} is a Buzz number.", number);
-
-        assertTrue(IS_ENDS_WITH.matcher(actual).find(),
-                "Not found message that {0} is ends with 7", number);
+        checker.check("is-buzz-number", actual, number);
+        checker.check("is-ends-with", actual, number);
 
         assertTrue(program.isFinished(),
                 "Program should finish after printing the error message.");
@@ -200,16 +181,12 @@ public class NumbersTest extends StageTest {
     CheckResult notBuzzNumbers(final long number) {
         final var program = new TestedProgram();
 
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
+        checker.check("enter-number", program.start());
 
         final var actual = program.execute(String.valueOf(number));
 
-        assertTrue(IS_NOT_BUZZ.matcher(actual).find(),
-                "Not found message that {0} is not a Buzz number.", number);
-
-        assertTrue(IS_NEITHER.matcher(actual).find(),
-                "Not found message that {0} is is neither divisible by 7 nor it ends with 7", number);
+        checker.check("is-not-buzz-number", actual, number);
+        checker.check("is-neither", actual, number);
 
         assertTrue(program.isFinished(),
                 "Program should finish after printing the error message.");
