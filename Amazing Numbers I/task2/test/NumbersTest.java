@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 final class TextChecker {
-    private static class Arguments {
+    static class Arguments {
         String key;
         String regexp;
         String feedback;
