@@ -12,10 +12,12 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 final class TextChecker {
-    String key;
-    String regexp;
-    String feedback;
-    int flags;
+    private static class Arguments {
+        String key;
+        String regexp;
+        String feedback;
+        int flags = Pattern.CASE_INSENSITIVE;
+    }
 
     private static final class Checker implements Predicate<String> {
         final Pattern expected;
@@ -38,10 +40,10 @@ final class TextChecker {
 
     private final Map<String, Checker> map = new HashMap<>();
 
-    public TextChecker add(Consumer<TextChecker> builderFunction) {
-        flags = Pattern.CASE_INSENSITIVE;
-        builderFunction.accept(this);
-        map.put(key, new Checker(Pattern.compile(regexp, flags), feedback));
+    public TextChecker add(Consumer<Arguments> builderFunction) {
+        final var args = new Arguments();
+        builderFunction.accept(args);
+        map.put(args.key, new Checker(Pattern.compile(args.regexp, args.flags), args.feedback));
         return this;
     }
 
