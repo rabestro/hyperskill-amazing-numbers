@@ -17,4 +17,10 @@ public class Main {
         }
     }
 
+    static void printDigits(long number) {
+        for (long rest = number; rest > 0; rest /= 10) {
+            long digit = rest % 10;
+            System.out.println(digit);
+        }
+    }
 }
