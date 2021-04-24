@@ -35,7 +35,7 @@ public final class TextChecker {
     public TextChecker check(Consumer<Arguments> builderFunction) {
         final var args = new Arguments();
         builderFunction.accept(args);
-        final var checker = new Checker(Pattern.compile(args.regexp, args.flags), args.feedback);
+        final var checker = new Checker(args);
         if (Objects.nonNull(args.key)) {
             map.put(args.key, checker);
         }
@@ -80,11 +80,11 @@ public final class TextChecker {
     public TextChecker add(Consumer<Arguments> builderFunction) {
         final var args = new Arguments();
         builderFunction.accept(args);
-        map.put(args.key, new Checker(Pattern.compile(args.regexp, args.flags), args.feedback));
+        map.put(args.key, new Checker(args));
         return this;
     }
 
-    public static class Arguments {
+    public final static class Arguments {
         public Object key;
         public String regexp;
         public String feedback;
@@ -95,9 +95,9 @@ public final class TextChecker {
         final Pattern expected;
         final String feedback;
 
-        Checker(final Pattern expected, final String feedback) {
-            this.expected = expected;
-            this.feedback = feedback;
+        Checker(final Arguments args) {
+            expected = Pattern.compile(args.regexp, args.flags);
+            feedback = args.feedback;
         }
 
         @Override
