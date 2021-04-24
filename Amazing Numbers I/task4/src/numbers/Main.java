@@ -6,6 +6,7 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        help();
         while (true) {
             System.out.println("Enter a natural number:");
             NumberProperties.number = scanner.nextLong();
@@ -17,9 +18,13 @@ public class Main {
                 NumberProperties.stream().forEach(System.out::print);
             } else {
                 System.out.println("This number is not natural!");
+                help();
             }
 
         }
     }
 
+    private static void help() {
+        System.out.println("Supported requests:");
+    }
 }
