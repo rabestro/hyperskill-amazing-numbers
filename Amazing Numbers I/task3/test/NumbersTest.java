@@ -1,9 +1,13 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
+import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import util.TextChecker;
 
+import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.function.LongPredicate;
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
 enum NumberProperties implements LongPredicate {
@@ -13,6 +17,9 @@ enum NumberProperties implements LongPredicate {
     DUCK(number -> String.valueOf(number).indexOf('0') != -1);
 
     private final LongPredicate hasProperty;
+    private final Pattern pattern = Pattern.compile(
+            name().toLowerCase() + "\\s*[:-]\\s*(?<value>true|false)",
+            Pattern.CASE_INSENSITIVE);
 
     NumberProperties(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
@@ -23,6 +30,10 @@ enum NumberProperties implements LongPredicate {
         return hasProperty.test(number);
     }
 
+    public Optional<String> extractValue(String output) {
+        final var matcher = pattern.matcher(output);
+        return matcher.find() ? Optional.of(matcher.group("value")) : Optional.empty();
+    }
 }
 
 public class NumbersTest extends StageTest {
@@ -30,13 +41,29 @@ public class NumbersTest extends StageTest {
 
     private static final TextChecker checker = new TextChecker();
 
-    private final long[] number = {
-            6
-    };
+    private final long[] number = {6, 11, 133, 1765};
 
     @DynamicTest(data = "number", order = 1)
     CheckResult simpleTest(final long number) {
-        checker.start()
+
+        final UnaryOperator<TextChecker> checkProperties = $ -> {
+            for (var property : NumberProperties.values()) {
+                final var name = property.name().toLowerCase();
+                $.contains(name, "The property {1} wasn''t found for number {0}.");
+                final var expected = property.test(number);
+                final var actual = Boolean.parseBoolean(property.extractValue($.getOutput())
+                        .orElseThrow(() -> new WrongAnswer(
+                                "The value for property " + name + " was not found.")));
+                if (expected != actual) {
+                    throw new WrongAnswer(MessageFormat.format(
+                            "For property {0} the expected value is {1} but found {2}.",
+                            name, expected, actual));
+                }
+            }
+            return $;
+        };
+
+        return checker.start()
                 .check($ -> {
                     $.key = ENTER_NUMBER;
                     $.regexp = "natural number";
@@ -44,16 +71,11 @@ public class NumbersTest extends StageTest {
                     $.flags += Pattern.LITERAL;
                 })
                 .execute(number)
-                .contains("Properties of " + number,
-                        "The first line of number''s properties should contains \"{1}\".");
-
-        for (var property : NumberProperties.values()) {
-            final var name = property.name().toLowerCase();
-            checker.contains(name, "The property {1} wasn't found for number {0}.");
-
-            final var expected = property.name().toLowerCase() + ": " + property.test(number);
-        }
-        return checker.finish().correct();
+                .contains("properties of " + number,
+                        "The first line of number''s properties should contains \"{1}\".")
+                .check(checkProperties)
+                .finish()
+                .correct();
     }
 
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
@@ -70,6 +92,5 @@ public class NumbersTest extends StageTest {
                 .finish()
                 .correct();
     }
-
 
 }
