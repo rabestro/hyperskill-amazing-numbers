@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
 public final class TextChecker {
@@ -100,10 +99,6 @@ public final class TextChecker {
         throw new WrongAnswer("Program should finish.");
     }
 
-    TextChecker check(UnaryOperator<TextChecker> verify) {
-        return verify.apply(this);
-    }
-
     public String getOutput() {
         return output;
     }
@@ -114,5 +109,4 @@ public final class TextChecker {
         map.put(args.key, new Checker(Pattern.compile(args.regexp, args.flags), args.feedback));
         return this;
     }
-
 }
