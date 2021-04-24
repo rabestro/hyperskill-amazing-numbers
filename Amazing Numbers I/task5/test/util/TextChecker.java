@@ -13,32 +13,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public final class TextChecker {
-    public static class Arguments {
-        public Object key;
-        public String regexp;
-        public String feedback;
-        public int flags = Pattern.CASE_INSENSITIVE;
-    }
-
-    private static final class Checker implements Predicate<String> {
-        final Pattern expected;
-        final String feedback;
-
-        Checker(final Pattern expected, final String feedback) {
-            this.expected = expected;
-            this.feedback = feedback;
-        }
-
-        @Override
-        public boolean test(String actual) {
-            return expected.matcher(actual).find();
-        }
-
-        String getFeedback(Object... args) {
-            return MessageFormat.format(feedback, args);
-        }
-    }
-
     private final Map<Object, Checker> map = new HashMap<>();
     private TestedProgram program;
     private String output;
@@ -108,5 +82,31 @@ public final class TextChecker {
         builderFunction.accept(args);
         map.put(args.key, new Checker(Pattern.compile(args.regexp, args.flags), args.feedback));
         return this;
+    }
+
+    public static class Arguments {
+        public Object key;
+        public String regexp;
+        public String feedback;
+        public int flags = Pattern.CASE_INSENSITIVE;
+    }
+
+    private static final class Checker implements Predicate<String> {
+        final Pattern expected;
+        final String feedback;
+
+        Checker(final Pattern expected, final String feedback) {
+            this.expected = expected;
+            this.feedback = feedback;
+        }
+
+        @Override
+        public boolean test(String actual) {
+            return expected.matcher(actual).find();
+        }
+
+        String getFeedback(Object... args) {
+            return MessageFormat.format(feedback, args);
+        }
     }
 }

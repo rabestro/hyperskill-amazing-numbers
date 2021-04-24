@@ -37,23 +37,20 @@ public class Main {
                 printHelp();
                 continue;
             }
-            LongStream.range(start, start + count).forEach(Main::printProperties);
+            LongStream.range(start, start + count)
+                    .mapToObj(NumberProperties::shortProperties)
+                    .forEach(System.out::println);
         }
     }
 
     private static long getNaturalNumber(final String input) {
-        for (final char symbol: input.toCharArray()) {
+        for (final char symbol : input.toCharArray()) {
             if (!Character.isDigit(symbol)) {
                 return -1;
             }
         }
         return Long.parseLong(input);
     }
-
-    private static void printProperties(long number) {
-        System.out.printf("%,16d is %s%n", number, NumberProperties.shortProperties(number));
-    }
-
 
     private static void printHelp() {
         System.out.println();
