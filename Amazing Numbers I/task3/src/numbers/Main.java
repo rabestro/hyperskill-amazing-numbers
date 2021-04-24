@@ -7,20 +7,18 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Enter a natural number:");
-        NumberProperties.number = scanner.nextLong();
+        final var number = scanner.nextLong();
 
-        if (NumberProperties.isNatural()) {
-            System.out.printf("Properties of %,d%n", NumberProperties.number);
-            NumberProperties.stream().forEach(System.out::print);
+        if (number > 0) {
+            System.out.printf("Properties of %,d%n", number);
+            for (var property : NumberProperties.values()) {
+                final var name = property.name().toLowerCase();
+                final var hasProperty = property.test(number);
+                System.out.printf("%12s: %s%n", name, hasProperty);
+            }
         } else {
             System.out.println("This number is not natural!");
         }
     }
 
-    static void printDigits(long number) {
-        for (long rest = number; rest > 0; rest /= 10) {
-            long digit = rest % 10;
-            System.out.println(digit);
-        }
-    }
 }
