@@ -92,7 +92,7 @@ public final class TextChecker {
         throw new WrongAnswer(MessageFormat.format(error, userInput, expected));
     }
 
-    public TextChecker finish() {
+    public TextChecker finished() {
         if (program.isFinished()) {
             return this;
         }

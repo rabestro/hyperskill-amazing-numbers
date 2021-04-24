@@ -16,10 +16,15 @@ public class NumbersTest extends StageTest {
     private static final long TEST_FIRST_NUMBERS = 20;
     private static final long MAX_NUMBER = Long.MAX_VALUE;
 
-    private enum Key {ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
+    private enum Key {HELP, ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
 
     private final TextChecker checker = new TextChecker()
             .add($ -> {
+                $.key = Key.HELP;
+                $.regexp = "supported requests";
+                $.feedback = "The program should display an instruction for the user";
+                $.flags += Pattern.LITERAL;
+            }).add($ -> {
                 $.key = Key.ENTER_NUMBER;
                 $.regexp = "natural number";
                 $.feedback = "The program should ask for a natural number.";
@@ -40,23 +45,31 @@ public class NumbersTest extends StageTest {
     @DynamicTest(data = "notNaturalNumbers", order = 10)
     CheckResult notNaturalNumbersTest(final long number) {
         return checker.start()
+                .check(Key.HELP)
                 .check(Key.ENTER_NUMBER)
                 .execute(number)
                 .check(Key.NOT_NATURAL)
+                .check(Key.HELP)
                 .check(Key.ENTER_NUMBER)
+                .execute(0)
+                .finished()
                 .correct();
     }
 
     @DynamicTest(order = 20)
     CheckResult finishByZeroTest() {
         return checker.start()
+                .check(Key.HELP)
                 .check(Key.ENTER_NUMBER)
                 .execute(-5)
                 .check(Key.NOT_NATURAL)
+                .check(Key.HELP)
                 .execute(-7635)
+                .check(Key.NOT_NATURAL)
+                .check(Key.HELP)
                 .check(Key.ENTER_NUMBER)
                 .execute(0)
-                .finish()
+                .finished()
                 .correct();
     }
 
@@ -86,7 +99,7 @@ public class NumbersTest extends StageTest {
                 }
             }
         });
-        return checker.execute(0).finish().correct();
+        return checker.execute(0).finished().correct();
     }
 
 }
