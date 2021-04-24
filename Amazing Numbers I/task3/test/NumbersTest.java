@@ -1,148 +1,75 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
-import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
-import org.hyperskill.hstest.testing.TestedProgram;
+import util.TextChecker;
 
-import java.text.MessageFormat;
+import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
 
+enum NumberProperties implements LongPredicate {
+    EVEN(number -> number % 2 == 0),
+    ODD(number -> number % 2 != 0),
+    BUZZ(number -> number % 7 == 0 || number % 10 == 7),
+    DUCK(number -> String.valueOf(number).indexOf('0') != -1);
+
+    private final LongPredicate hasProperty;
+
+    NumberProperties(LongPredicate hasProperty) {
+        this.hasProperty = hasProperty;
+    }
+
+    @Override
+    public boolean test(long number) {
+        return hasProperty.test(number);
+    }
+
+}
+
 public class NumbersTest extends StageTest {
+    private static final Integer ENTER_NUMBER = 1;
 
-    private static final Pattern ERROR_MESSAGE = Pattern.compile(
-            "(this|the) number is( not|n't) natural",
-            Pattern.CASE_INSENSITIVE);
+    private static final TextChecker checker = new TextChecker();
 
-    private static final Pattern IS_BUZZ_NUMBER = Pattern.compile(
-            "is(?: a| the)? buzz( number)?", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_NOT_BUZZ = Pattern.compile(
-            "is( not|n't)(?: a| the)? buzz( number)?", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_DIVISIBLE = Pattern.compile(
-            "is divisible by", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_ENDS_WITH = Pattern.compile(
-            "(is|it) ends with", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern IS_NEITHER = Pattern.compile(
-            "is neither divisible by 7 nor it ends with 7", Pattern.CASE_INSENSITIVE);
-
-    private final long[] number = {1, 2, 3, 4, 5, 9_223_372_036_854_775_807L};
+    private final long[] number = {
+            6
+    };
 
     @DynamicTest(data = "number", order = 1)
     CheckResult simpleTest(final long number) {
-        final var program = new TestedProgram();
+        checker.start()
+                .check($ -> {
+                    $.key = ENTER_NUMBER;
+                    $.regexp = "natural number";
+                    $.feedback = "The program should ask for a natural number.";
+                    $.flags += Pattern.LITERAL;
+                })
+                .execute(number)
+                .contains("Properties of " + number,
+                        "The first line of number''s properties should contains \"{1}\".");
 
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
+        for (var property : NumberProperties.values()) {
+            final var name = property.name().toLowerCase();
+            checker.contains(name, "The property {1} wasn't found for number {0}.");
 
-        final var expected = number % 2 == 0 ? "even" : "odd";
-        final var actual = program.execute(String.valueOf(number)).toLowerCase();
-
-        assertTrue(actual.contains(expected),
-                "Number {0} should be {1}.", number, expected);
-
-        assertTrue(program.isFinished(),
-                "Program should finish after calculating parity of the number.");
-
-        return CheckResult.correct();
-    }
-
-    private final long[] incorrect = {0, -1, -2, -3, -4, -5};
-
-    @DynamicTest(data = "incorrect", order = 10)
-    CheckResult incorrectNumbers(final long number) {
-        final var program = new TestedProgram();
-
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
-
-        final var actual = program.execute(String.valueOf(number));
-
-        assertTrue(ERROR_MESSAGE.matcher(actual).find(),
-                "Number {0} is not natural. Expected error message.", number);
-
-        assertTrue(program.isFinished(),
-                "Program should finish after printing the error message.");
-
-        return CheckResult.correct();
-    }
-
-    private final long[] divisible = {7, 14, 21, 28, 35, 123 * 7, 578 * 7, 9865 * 7};
-
-    @DynamicTest(data = "divisible", order = 20)
-    CheckResult divisibleNumbers(final long number) {
-        final var program = new TestedProgram();
-
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
-
-        final var actual = program.execute(String.valueOf(number));
-
-        assertTrue(IS_BUZZ_NUMBER.matcher(actual).find(),
-                "Not found message that {0} is a Buzz number.", number);
-
-        assertTrue(IS_DIVISIBLE.matcher(actual).find(),
-                "Not found message that {0} is divisible by 7", number);
-
-        assertTrue(program.isFinished(),
-                "Program should finish after printing the error message.");
-
-        return CheckResult.correct();
-    }
-
-    private final long[] endsWith7 = {17, 27, 97, 107, 308687, 9821007, 204782607};
-
-    @DynamicTest(data = "endsWith7", order = 30)
-    CheckResult endsWith7Numbers(final long number) {
-        final var program = new TestedProgram();
-
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
-
-        final var actual = program.execute(String.valueOf(number));
-
-        assertTrue(IS_BUZZ_NUMBER.matcher(actual).find(),
-                "Not found message that {0} is a Buzz number.", number);
-
-        assertTrue(IS_ENDS_WITH.matcher(actual).find(),
-                "Not found message that {0} is ends with 7", number);
-
-        assertTrue(program.isFinished(),
-                "Program should finish after printing the error message.");
-
-        return CheckResult.correct();
-    }
-
-    private final long[] notBuzz = {6, 11, 18, 29, 34};
-
-    @DynamicTest(data = "notBuzz", order = 30)
-    CheckResult notBuzzNumbers(final long number) {
-        final var program = new TestedProgram();
-
-        assertTrue(program.start().toLowerCase().contains("natural number"),
-                "The program should ask for a natural number.");
-
-        final var actual = program.execute(String.valueOf(number));
-
-        assertTrue(IS_NOT_BUZZ.matcher(actual).find(),
-                "Not found message that {0} is not a Buzz number.", number);
-
-        assertTrue(IS_NEITHER.matcher(actual).find(),
-                "Not found message that {0} is is neither divisible by 7 nor it ends with 7", number);
-
-        assertTrue(program.isFinished(),
-                "Program should finish after printing the error message.");
-
-        return CheckResult.correct();
-    }
-
-    private static void assertTrue(final boolean condition, final String error, final Object... args) {
-        if (!condition) {
-            final var feedback = MessageFormat.format(error, args);
-            throw new WrongAnswer(feedback);
+            final var expected = property.name().toLowerCase() + ": " + property.test(number);
         }
+        return checker.finish().correct();
     }
+
+    private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
+
+    @DynamicTest(data = "notNaturalNumbers", order = 10)
+    CheckResult notNaturalNumbersTest(final long number) {
+        return checker.start()
+                .check(ENTER_NUMBER)
+                .execute(number)
+                .check($ -> {
+                    $.regexp = "(this|the) number is( not|n't) natural";
+                    $.feedback = "Number {0} is not natural. Expected error message.";
+                })
+                .finish()
+                .correct();
+    }
+
 
 }
