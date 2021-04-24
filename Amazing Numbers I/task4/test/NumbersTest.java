@@ -53,6 +53,7 @@ public class NumbersTest extends StageTest {
                 .check(Key.ENTER_NUMBER)
                 .execute(-5)
                 .check(Key.NOT_NATURAL)
+                .execute(-7635)
                 .check(Key.ENTER_NUMBER)
                 .execute(0)
                 .finish()
@@ -67,17 +68,17 @@ public class NumbersTest extends StageTest {
                 random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER));
 
         numbers.forEach(number -> {
-            checker.check(Key.ENTER_NUMBER)
-                    .execute(number)
-                    .check(Key.PROPERTIES);
+            checker.check(Key.ENTER_NUMBER).execute(number).check(Key.PROPERTIES);
 
             for (var property : NumberProperties.values()) {
                 final var name = property.name().toLowerCase();
                 checker.contains(name, "The property {1} wasn''t found for number {0}.");
+
                 final var expected = property.test(number);
                 final var actual = Boolean.parseBoolean(property.extractValue(checker.getOutput())
-                        .orElseThrow(() ->
-                                new WrongAnswer("The value for property " + name + " was not found.")));
+                        .orElseThrow(() -> new WrongAnswer(
+                                "The value for property " + name + " was not found.")));
+
                 if (expected != actual) {
                     throw new WrongAnswer(MessageFormat.format(
                             "For property {0} the expected value is {1} but found {2}.",
