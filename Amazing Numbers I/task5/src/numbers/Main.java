@@ -33,7 +33,7 @@ public class Main {
             }
             final var count = getNaturalNumber(data[1]);
             if (count < 1) {
-                System.out.println("The count should be natural number.");
+                System.out.println("The count should be a natural number.");
                 printHelp();
                 continue;
             }
@@ -42,9 +42,6 @@ public class Main {
     }
 
     private static long getNaturalNumber(final String input) {
-        if (input.isBlank()) {
-            return -1;
-        }
         for (final char symbol: input.toCharArray()) {
             if (!Character.isDigit(symbol)) {
                 return -1;
@@ -59,11 +56,12 @@ public class Main {
 
 
     private static void printHelp() {
+        System.out.println();
         System.out.println("Supported requests:");
         System.out.println("- one natural number to print its properties;");
         System.out.println("- two natural numbers separated by space:");
         System.out.println("  - a starting number for the list;");
         System.out.println("  - a count of numbers in the list;");
-        System.out.println("- 0 for exit. ");
+        System.out.println("- 0 for the exit. ");
     }
 }

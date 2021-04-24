@@ -75,10 +75,11 @@ public class NumbersTest extends StageTest {
 
     @DynamicTest(order = 30)
     CheckResult simpleTest() {
-        checker.start();
         final var numbers = LongStream.concat(
                 LongStream.range(1, TEST_FIRST_NUMBERS),
-                random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER));
+                random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER)
+        );
+        checker.start();
 
         numbers.forEach(number -> {
             checker.check(Key.ENTER_NUMBER).execute(number).check(Key.PROPERTIES);

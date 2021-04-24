@@ -6,11 +6,12 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        System.out.println("Welcome to Amazing Numbers!");
         printHelp();
         while (true) {
-            System.out.print("Enter a natural number:");
-            final var number = scanner.nextLong();
             System.out.println();
+            System.out.println("Enter a natural number:");
+            final var number = scanner.nextLong();
             if (number == 0) {
                 break;
             }
@@ -32,8 +33,9 @@ public class Main {
     }
 
     private static void printHelp() {
+        System.out.println();
         System.out.println("Supported requests:");
-        System.out.println("- a natural number to print its properties ");
-        System.out.println("- 0 for exit.");
+        System.out.println("- natural number to print its properties;");
+        System.out.println("- 0 for the exit.");
     }
 }
