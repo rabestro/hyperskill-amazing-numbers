@@ -8,10 +8,12 @@ import util.TextChecker;
 import java.text.MessageFormat;
 import java.util.Random;
 import java.util.regex.Pattern;
+import java.util.stream.LongStream;
 
 public class NumbersTest extends StageTest {
     private static final Random random = new Random();
-    private static final long TESTS = 20;
+    private static final long RANDOM_NUMBERS_TESTS = 20;
+    private static final long TEST_FIRST_NUMBERS = 20;
     private static final long MAX_NUMBER = Long.MAX_VALUE;
 
     private enum Key {ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
@@ -60,7 +62,11 @@ public class NumbersTest extends StageTest {
     @DynamicTest(order = 30)
     CheckResult simpleTest() {
         checker.start();
-        random.longs(TESTS, 1, MAX_NUMBER).forEach(number -> {
+        final var numbers = LongStream.concat(
+                LongStream.range(1, TEST_FIRST_NUMBERS),
+                random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER));
+
+        numbers.forEach(number -> {
             checker.check(Key.ENTER_NUMBER)
                     .execute(number)
                     .check(Key.PROPERTIES);
