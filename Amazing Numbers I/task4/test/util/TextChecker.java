@@ -42,7 +42,7 @@ public final class TextChecker {
     private final Map<Object, Checker> map = new HashMap<>();
     private TestedProgram program;
     private String output;
-    private String userInput = "";
+    private Object userInput = "";
 
     public TextChecker start(String... args) {
         program = new TestedProgram();
@@ -75,13 +75,9 @@ public final class TextChecker {
         return CheckResult.correct();
     }
 
-    public TextChecker execute(long number) {
-        return execute(String.valueOf(number));
-    }
-
-    public TextChecker execute(String userInput) {
+    public TextChecker execute(Object userInput) {
         this.userInput = userInput;
-        output = program.execute(userInput);
+        output = program.execute(userInput.toString());
         return this;
     }
 
