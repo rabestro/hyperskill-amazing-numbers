@@ -32,6 +32,16 @@ public class NumbersTest extends StageTest {
 
     private final UserProgram program = new UserProgram();
     private final long[] notNaturalNumbers = {-1, -2, -3, -4, -5};
+    private final Object[][] parameters = new Object[][]{
+            {1L, TEST_FIRST_NUMBERS, "even"},
+            {1L, TEST_FIRST_NUMBERS, "odd"},
+            {1L, TEST_FIRST_NUMBERS, "buzz"},
+            {1L, TEST_FIRST_NUMBERS, "spy"},
+            {999_999L, 5L, "spy"},
+            {999_999_999L, 9L, "palindromic"},
+            {999_999_999L, 9L, "gapful"},
+            {999_999_999L, 9L, "duck"}
+    };
 
     @DynamicTest(data = "notNaturalNumbers", order = 10)
     CheckResult notNaturalNumbersTest(final long number) {
@@ -91,6 +101,19 @@ public class NumbersTest extends StageTest {
                 .execute("1 " + TEST_FIRST_NUMBERS)
                 .check(new LinesChecker(TEST_FIRST_NUMBERS + 1))
                 .check(new ListChecker(1, TEST_FIRST_NUMBERS))
+                .execute(0)
+                .finished()
+                .result();
+    }
+
+    @DynamicTest(data = "parameters", order = 50)
+    CheckResult twoNumbersAndPropertyTest(Long start, Long count, String property) {
+        return program
+                .start()
+                .check(REQUEST)
+                .execute(start + " " + count + " " + property)
+                .check(new LinesChecker(count + 1))
+                .check(new ListChecker(start, count, new String[]{property}))
                 .execute(0)
                 .finished()
                 .result();
