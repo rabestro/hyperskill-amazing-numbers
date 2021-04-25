@@ -90,7 +90,7 @@ public class NumbersTest extends StageTest {
                 .check(PROPERTIES)
                 .check(new CardChecker(number))
         );
-        return program.execute(0).finished().result();
+        return program.check(REQUEST).execute(0).finished().result();
     }
 
     @DynamicTest(order = 40)
@@ -101,6 +101,7 @@ public class NumbersTest extends StageTest {
                 .execute("1 " + TEST_FIRST_NUMBERS)
                 .check(new LinesChecker(TEST_FIRST_NUMBERS + 1))
                 .check(new ListChecker(1, TEST_FIRST_NUMBERS))
+                .check(REQUEST)
                 .execute(0)
                 .finished()
                 .result();
@@ -114,6 +115,7 @@ public class NumbersTest extends StageTest {
                 .execute(start + " " + count + " " + property)
                 .check(new LinesChecker(count + 1))
                 .check(new ListChecker(start, count, new String[]{property}))
+                .check(REQUEST)
                 .execute(0)
                 .finished()
                 .result();

@@ -52,7 +52,12 @@ public class NumbersTest extends StageTest {
             {999_999_999L, 9L, "gapful duck"},
             {999_999_999L, 9L, "duck odd"}
     };
-
+    private final Object[][] searchProperties = new Object[][]{
+            {1L, 10L, "even spy buzz"},
+            {1L, 10L, "odd buzz duck"},
+            {1L, 10L, "buzz gapful even"},
+            {999_999L, 5L, "spy even gapful"},
+    };
     @DynamicTest(data = "notNaturalNumbers", order = 10)
     CheckResult notNaturalNumbersTest(final long number) {
         return program
@@ -137,6 +142,21 @@ public class NumbersTest extends StageTest {
                 .execute(start + " " + count + " " + properties)
                 .check(new LinesChecker(count + 1))
                 .check(new ListChecker(start, count, properties))
+                .check(REQUEST)
+                .execute(0)
+                .finished()
+                .result();
+    }
+
+    @DynamicTest(data = "searchProperties", order = 70)
+    CheckResult twoNumbersAndPropertiesTest(Long start, Long count, String properties) {
+        return program
+                .start()
+                .check(REQUEST)
+                .execute(start + " " + count + " " + properties)
+                .check(new LinesChecker(count + 1))
+                .check(new ListChecker(start, count, properties))
+                .check(REQUEST)
                 .execute(0)
                 .finished()
                 .result();
