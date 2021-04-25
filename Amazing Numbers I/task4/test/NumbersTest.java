@@ -23,9 +23,9 @@ public class NumbersTest extends StageTest {
                 $.feedback = "The program should display an instruction for the user";
                 $.flags += Pattern.LITERAL;
             }).add($ -> {
-                $.key = Key.ENTER_NUMBER;
-                $.regexp = "natural number";
-                $.feedback = "The program should ask for a natural number.";
+                $.key = Key.REQUEST;
+                $.regexp = "enter a request";
+                $.feedback = "The program should ask for a request.";
                 $.flags += Pattern.LITERAL;
             }).add($ -> {
                 $.key = Key.NOT_NATURAL;
@@ -43,11 +43,11 @@ public class NumbersTest extends StageTest {
     CheckResult notNaturalNumbersTest(final long number) {
         return checker.start()
                 .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(Key.REQUEST)
                 .execute(number)
                 .check(Key.NOT_NATURAL)
                 .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(Key.REQUEST)
                 .execute(0)
                 .finished()
                 .correct();
@@ -57,14 +57,14 @@ public class NumbersTest extends StageTest {
     CheckResult finishByZeroTest() {
         return checker.start()
                 .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(Key.REQUEST)
                 .execute(-5)
                 .check(Key.NOT_NATURAL)
                 .check(Key.HELP)
                 .execute(-7635)
                 .check(Key.NOT_NATURAL)
                 .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(Key.REQUEST)
                 .execute(0)
                 .finished()
                 .correct();
@@ -79,7 +79,7 @@ public class NumbersTest extends StageTest {
         checker.start();
 
         numbers.forEach(number -> {
-            checker.check(Key.ENTER_NUMBER).execute(number).check(Key.PROPERTIES);
+            checker.check(Key.REQUEST).execute(number).check(Key.PROPERTIES);
 
             for (var property : NumberProperties.values()) {
                 final var name = property.name().toLowerCase();
@@ -100,6 +100,6 @@ public class NumbersTest extends StageTest {
         return checker.execute(0).finished().correct();
     }
 
-    private enum Key {HELP, ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
+    private enum Key {HELP, REQUEST, NOT_NATURAL, PROPERTIES}
 
 }

@@ -10,7 +10,7 @@ public class Main {
         printHelp();
         while (true) {
             System.out.println();
-            System.out.println("Enter a natural number:");
+            System.out.println("Enter a request:");
             final var number = scanner.nextLong();
             if (number == 0) {
                 break;
