@@ -3,11 +3,12 @@ package util;
 import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 
 import java.text.MessageFormat;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
-public abstract class AbstractChecker implements UnaryOperator<UserProgram>, Predicate<UserProgram> {
-    protected final String feedback;
+import static java.util.Objects.isNull;
+
+public abstract class AbstractChecker implements Checker {
+    protected String feedback;
+    protected Object[] parameters;
 
     protected AbstractChecker(String feedback) {
         this.feedback = feedback;
@@ -21,7 +22,9 @@ public abstract class AbstractChecker implements UnaryOperator<UserProgram>, Pre
         if (this.test(program)) {
             return program;
         }
-        throw getFeedback(program.getInput(), program.getOutput());
+        throw isNull(parameters)
+                ? getFeedback(program.getInput(), program.getOutput())
+                : getFeedback(parameters);
     }
 
     public WrongAnswer getFeedback(Object... args) {

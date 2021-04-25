@@ -1,6 +1,5 @@
 package util;
 
-import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
@@ -10,10 +9,15 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public final class UserProgram {
-    private final Map<Object, AbstractChecker> map = new HashMap<>();
+    public static Checker FINISH_CHECKER = new FinishChecker("Program should finish.");
+
+    private static final Map<Object, Checker> map = new HashMap<>();
+
     private TestedProgram program;
+    private CheckResult result = CheckResult.correct();
+
+    private String input;
     private String output;
-    private String input = "";
 
     public UserProgram start(String... args) {
         program = new TestedProgram();
@@ -21,16 +25,16 @@ public final class UserProgram {
         return this;
     }
 
-    public UserProgram check(Object key) {
-        final var checker = map.get(key);
-        if (checker.test(this)) {
-            return this;
-        }
-        throw checker.getFeedback(input, output);
+    public UserProgram check(final Checker checker) {
+        return checker.apply(this);
     }
 
-    public CheckResult correct() {
-        return CheckResult.correct();
+    public UserProgram check(Object key) {
+        return map.get(key).apply(this);
+    }
+
+    public CheckResult result() {
+        return result;
     }
 
     public UserProgram execute(long number) {
@@ -48,10 +52,7 @@ public final class UserProgram {
     }
 
     public UserProgram finished() {
-        if (program.isFinished()) {
-            return this;
-        }
-        throw new WrongAnswer("Program should finish.");
+        return FINISH_CHECKER.apply(this);
     }
 
     public String getOutput() {

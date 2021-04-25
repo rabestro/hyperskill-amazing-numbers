@@ -2,12 +2,10 @@ import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
-import util.TextChecker;
-import util.UserProgram;
+import util.*;
 
 import java.text.MessageFormat;
 import java.util.Random;
-import java.util.regex.Pattern;
 import java.util.stream.LongStream;
 
 public class NumbersTest extends StageTest {
@@ -15,29 +13,24 @@ public class NumbersTest extends StageTest {
     private static final long RANDOM_NUMBERS_TESTS = 20;
     private static final long TEST_FIRST_NUMBERS = 20;
     private static final long MAX_NUMBER = Long.MAX_VALUE;
-    private final UserProgram checker = new UserProgram()
+
+    private final UserProgram program = new UserProgram()
             .add(Key.HELP, new TextChecker("supported requests",
                     "The program should display an instruction for the user"))
-            .add($ -> {
-                $.key = Key.ENTER_NUMBER;
-                $.regexp = "natural number";
-                $.feedback = "The program should ask for a natural number.";
-                $.flags += Pattern.LITERAL;
-            }).add($ -> {
-                $.key = Key.NOT_NATURAL;
-                $.regexp = "(this|the) number is( not|n't) natural";
-                $.feedback = "Number {0} is not natural. Expected error message.";
-            }).add($ -> {
-                $.key = Key.PROPERTIES;
-                $.regexp = "properties of ";
-                $.feedback = "The first line of number''s properties should contains \"{1}\".";
-                $.flags += Pattern.LITERAL;
-            });
+            .add(Key.ENTER_NUMBER, new TextChecker("natural number",
+                    "The program should ask for a natural number."))
+            .add(Key.NOT_NATURAL, new RegexChecker(
+                    "(this|the) number is( not|n't) natural",
+                    "Number {0} is not natural. Expected error message."))
+            .add(Key.PROPERTIES, new TextChecker("properties of ",
+                    "The first line of number''s properties should contains \"{1}\"."));
+
     private final long[] notNaturalNumbers = {-1, -2, -3, -4, -5};
 
     @DynamicTest(data = "notNaturalNumbers", order = 10)
     CheckResult notNaturalNumbersTest(final long number) {
-        return checker.start()
+        return program
+                .start()
                 .check(Key.HELP)
                 .check(Key.ENTER_NUMBER)
                 .execute(number)
@@ -46,12 +39,13 @@ public class NumbersTest extends StageTest {
                 .check(Key.ENTER_NUMBER)
                 .execute(0)
                 .finished()
-                .correct();
+                .result();
     }
 
     @DynamicTest(order = 20)
     CheckResult finishByZeroTest() {
-        return checker.start()
+        return program
+                .start()
                 .check(Key.HELP)
                 .check(Key.ENTER_NUMBER)
                 .execute(-5)
@@ -63,25 +57,25 @@ public class NumbersTest extends StageTest {
                 .check(Key.ENTER_NUMBER)
                 .execute(0)
                 .finished()
-                .correct();
+                .result();
     }
 
     @DynamicTest(order = 30)
     CheckResult oneNumberTest() {
-        checker.start();
         final var numbers = LongStream.concat(
                 LongStream.range(1, TEST_FIRST_NUMBERS),
                 random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER));
 
+        program.start();
         numbers.forEach(number -> {
-            checker.check(Key.ENTER_NUMBER).execute(number).check(Key.PROPERTIES);
+            program.check(Key.ENTER_NUMBER).execute(number).check(Key.PROPERTIES);
 
             for (var property : NumberProperties.values()) {
                 final var name = property.name().toLowerCase();
-                checker.contains(name, "The property {1} wasn''t found for number {0}.");
+                program.contains(name, "The property {1} wasn''t found for number {0}.");
 
                 final var expected = property.test(number);
-                final var actual = Boolean.parseBoolean(property.extractValue(checker.getOutput())
+                final var actual = Boolean.parseBoolean(property.extractValue(program.getOutput())
                         .orElseThrow(() -> new WrongAnswer(
                                 "The value for property " + name + " was not found.")));
 
@@ -92,40 +86,27 @@ public class NumbersTest extends StageTest {
                 }
             }
         });
-        return checker.execute(0).finished().correct();
+        return program.execute(0).finished().result();
     }
 
     @DynamicTest(order = 40)
     CheckResult twoNumbersTest() {
-        checker.start()
+        return program
+                .start()
                 .check(Key.ENTER_NUMBER)
-                .execute("1 " + TEST_FIRST_NUMBERS);
-
-        final var numbers = LongStream.concat(
-                LongStream.range(1, TEST_FIRST_NUMBERS),
-                random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER));
-
-        numbers.forEach(number -> {
-            checker.check(Key.ENTER_NUMBER).execute(number).check(Key.PROPERTIES);
-
-            for (var property : NumberProperties.values()) {
-                final var name = property.name().toLowerCase();
-                checker.contains(name, "The property {1} wasn''t found for number {0}.");
-
-                final var expected = property.test(number);
-                final var actual = Boolean.parseBoolean(property.extractValue(checker.getOutput())
-                        .orElseThrow(() -> new WrongAnswer(
-                                "The value for property " + name + " was not found.")));
-
-                if (expected != actual) {
-                    throw new WrongAnswer(MessageFormat.format(
-                            "For property {0} the expected value is {1} but found {2}.",
-                            name, expected, actual));
-                }
-            }
-        });
-        return checker.execute(0).finished().correct();
+                .execute("1 " + TEST_FIRST_NUMBERS)
+                .check(new LinesChecker(TEST_FIRST_NUMBERS + 1))
+                .execute(0)
+                .finished()
+                .result();
     }
+
+    private static final Checker CHECK_LIST = new AbstractChecker("The list is incorrect") {
+        @Override
+        public boolean test(UserProgram program) {
+            return false;
+        }
+    };
 
     private enum Key {HELP, ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
 }
