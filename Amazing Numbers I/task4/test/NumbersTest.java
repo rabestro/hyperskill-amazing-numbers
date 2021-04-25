@@ -3,7 +3,7 @@ import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import util.NumberProperties;
-import util.TextChecker;
+import util.UserProgram;
 
 import java.text.MessageFormat;
 import java.util.Random;
@@ -16,9 +16,7 @@ public class NumbersTest extends StageTest {
     private static final long TEST_FIRST_NUMBERS = 20;
     private static final long MAX_NUMBER = Long.MAX_VALUE;
 
-    private enum Key {HELP, ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
-
-    private final TextChecker checker = new TextChecker()
+    private final UserProgram checker = new UserProgram()
             .add($ -> {
                 $.key = Key.HELP;
                 $.regexp = "supported requests";
@@ -39,7 +37,6 @@ public class NumbersTest extends StageTest {
                 $.feedback = "The first line of number''s properties should contains \"{1}\".";
                 $.flags += Pattern.LITERAL;
             });
-
     private final long[] notNaturalNumbers = {-1, -2, -3, -4, -5};
 
     @DynamicTest(data = "notNaturalNumbers", order = 10)
@@ -102,5 +99,7 @@ public class NumbersTest extends StageTest {
         });
         return checker.execute(0).finished().correct();
     }
+
+    private enum Key {HELP, ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
 
 }
