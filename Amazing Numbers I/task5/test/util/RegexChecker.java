@@ -5,11 +5,6 @@ import java.util.regex.Pattern;
 public class RegexChecker extends AbstractChecker {
     private final Pattern expected;
 
-    public RegexChecker(final UserProgram.Arguments args) {
-        super(args.feedback);
-        expected = Pattern.compile(args.regexp, args.flags);
-    }
-
     public RegexChecker(final String regexp, final String feedback) {
         this(regexp, Pattern.CASE_INSENSITIVE, feedback);
     }

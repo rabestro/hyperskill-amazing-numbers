@@ -13,7 +13,7 @@ public class LinesChecker extends AbstractChecker {
     @Override
     public boolean test(UserProgram program) {
         final var actual = program.getOutput().lines().filter(not(String::isBlank)).count();
-        parameters = new Object[] {expected, actual};
+        parameters = new Object[]{expected, actual};
         return actual == expected;
     }
 

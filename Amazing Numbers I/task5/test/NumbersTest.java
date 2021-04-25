@@ -14,29 +14,42 @@ public class NumbersTest extends StageTest {
     private static final long TEST_FIRST_NUMBERS = 20;
     private static final long MAX_NUMBER = Long.MAX_VALUE;
 
-    private final UserProgram program = new UserProgram()
-            .add(Key.HELP, new TextChecker("supported requests",
-                    "The program should display an instruction for the user"))
-            .add(Key.ENTER_NUMBER, new TextChecker("natural number",
-                    "The program should ask for a natural number."))
-            .add(Key.NOT_NATURAL, new RegexChecker(
-                    "(this|the) number is( not|n't) natural",
-                    "Number {0} is not natural. Expected error message."))
-            .add(Key.PROPERTIES, new TextChecker("properties of ",
-                    "The first line of number''s properties should contains \"{1}\"."));
-
+    private static final Checker HELP = new TextChecker(
+            "supported requests",
+            "The program should display an instruction for the user"
+    );
+    private static final Checker ENTER_NUMBER = new TextChecker(
+            "natural number",
+            "The program should ask for a natural number."
+    );
+    private static final Checker NOT_NATURAL = new RegexChecker(
+            "(this|the) number is( not|n't) natural",
+            "Number {0} is not natural. Expected error message."
+    );
+    private static final Checker PROPERTIES = new TextChecker(
+            "properties of ",
+            "The first line of number''s properties should contains \"{1}\"."
+    );
+    private static final Checker LINES_IN_CARD = new LinesChecker(7 + 1);
+    private static final Checker LIST_CHECKER = new AbstractChecker("The list is incorrect") {
+        @Override
+        public boolean test(UserProgram program) {
+            return true;
+        }
+    };
+    private final UserProgram program = new UserProgram();
     private final long[] notNaturalNumbers = {-1, -2, -3, -4, -5};
 
     @DynamicTest(data = "notNaturalNumbers", order = 10)
     CheckResult notNaturalNumbersTest(final long number) {
         return program
                 .start()
-                .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(HELP)
+                .check(ENTER_NUMBER)
                 .execute(number)
-                .check(Key.NOT_NATURAL)
-                .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(NOT_NATURAL)
+                .check(HELP)
+                .check(ENTER_NUMBER)
                 .execute(0)
                 .finished()
                 .result();
@@ -46,15 +59,15 @@ public class NumbersTest extends StageTest {
     CheckResult finishByZeroTest() {
         return program
                 .start()
-                .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(HELP)
+                .check(ENTER_NUMBER)
                 .execute(-5)
-                .check(Key.NOT_NATURAL)
-                .check(Key.HELP)
+                .check(NOT_NATURAL)
+                .check(HELP)
                 .execute(-7635)
-                .check(Key.NOT_NATURAL)
-                .check(Key.HELP)
-                .check(Key.ENTER_NUMBER)
+                .check(NOT_NATURAL)
+                .check(HELP)
+                .check(ENTER_NUMBER)
                 .execute(0)
                 .finished()
                 .result();
@@ -68,7 +81,7 @@ public class NumbersTest extends StageTest {
 
         program.start();
         numbers.forEach(number -> {
-            program.check(Key.ENTER_NUMBER).execute(number).check(Key.PROPERTIES);
+            program.check(ENTER_NUMBER).execute(number).check(LINES_IN_CARD).check(PROPERTIES);
 
             for (var property : NumberProperties.values()) {
                 final var name = property.name().toLowerCase();
@@ -93,20 +106,12 @@ public class NumbersTest extends StageTest {
     CheckResult twoNumbersTest() {
         return program
                 .start()
-                .check(Key.ENTER_NUMBER)
+                .check(ENTER_NUMBER)
                 .execute("1 " + TEST_FIRST_NUMBERS)
                 .check(new LinesChecker(TEST_FIRST_NUMBERS + 1))
+                .check(LIST_CHECKER)
                 .execute(0)
                 .finished()
                 .result();
     }
-
-    private static final Checker CHECK_LIST = new AbstractChecker("The list is incorrect") {
-        @Override
-        public boolean test(UserProgram program) {
-            return false;
-        }
-    };
-
-    private enum Key {HELP, ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
 }
