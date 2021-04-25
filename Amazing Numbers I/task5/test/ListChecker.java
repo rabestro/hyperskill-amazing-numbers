@@ -25,7 +25,8 @@ public class ListChecker extends AbstractChecker {
 
     @Override
     public boolean test(UserProgram program) {
-        final var lines = program.getOutput().lines()
+        final var lines = program.getOutput()
+                .lines()
                 .filter(Predicate.not(String::isBlank))
                 .limit(count)
                 .collect(Collectors.toUnmodifiableList());
@@ -45,7 +46,7 @@ public class ListChecker extends AbstractChecker {
                 return false;
             }
 
-            final var rawNumber = matcher.group("number");
+            final var rawNumber = matcher.group("number").strip();
             final var actualNumber = NON_DIGIT_SYMBOL.matcher(rawNumber).replaceAll("");
 
             if (!String.valueOf(expectedNumber).equals(actualNumber)) {
@@ -66,7 +67,7 @@ public class ListChecker extends AbstractChecker {
                     .collect(Collectors.toUnmodifiableSet());
 
             if (actualProperties.size() != expectedProperties.size()) {
-                feedback = "Number {0} has {1} properties but actual number of properties is {2}. " +
+                feedback = "For number {0} expected number of properties is {1} but actual number of properties is {2}. " +
                         "Expected properties are {3}. Actual properties are {4}";
                 parameters = new Object[]{expectedNumber, expectedProperties.size(),
                         actualProperties.size(), expectedProperties, actualProperties};
@@ -74,7 +75,7 @@ public class ListChecker extends AbstractChecker {
             }
 
             if (!Set.copyOf(actualProperties).equals(expectedProperties)) {
-                feedback = "Expected properties for number {0} are {1}. Actual properties are {2}.";
+                feedback = "For number {0} expected properties are {1}. Actual properties are {2}.";
                 parameters = new Object[]{expectedNumber, expectedProperties, actualProperties};
             }
             currentNumber++;

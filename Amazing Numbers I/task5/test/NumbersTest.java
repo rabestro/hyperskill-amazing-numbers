@@ -75,25 +75,13 @@ public class NumbersTest extends StageTest {
                 random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER));
 
         program.start();
-        numbers.forEach(number -> {
-            program.check(ENTER_NUMBER).execute(number).check(LINES_IN_CARD).check(PROPERTIES);
-
-            for (var property : NumberProperties.values()) {
-                final var name = property.name().toLowerCase();
-                program.contains(name, "The property {1} wasn''t found for number {0}.");
-
-                final var expected = property.test(number);
-                final var actual = Boolean.parseBoolean(property.extractValue(program.getOutput())
-                        .orElseThrow(() -> new WrongAnswer(
-                                "The value for property " + name + " was not found.")));
-
-                if (expected != actual) {
-                    throw new WrongAnswer(MessageFormat.format(
-                            "For property {0} the expected value is {1} but found {2}.",
-                            name, expected, actual));
-                }
-            }
-        });
+        numbers.forEach(number -> program
+                .check(ENTER_NUMBER)
+                .execute(number)
+                .check(LINES_IN_CARD)
+                .check(PROPERTIES)
+                .check(new CardChecker(number))
+        );
         return program.execute(0).finished().result();
     }
 
