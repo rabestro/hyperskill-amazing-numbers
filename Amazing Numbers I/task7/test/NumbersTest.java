@@ -9,7 +9,7 @@ import java.util.stream.LongStream;
 public class NumbersTest extends StageTest {
     private static final Random random = new Random();
     private static final long RANDOM_NUMBERS_TESTS = 20;
-    private static final long TEST_FIRST_NUMBERS = 20;
+    private static final long TEST_FIRST_NUMBERS = 10;
     private static final long MAX_NUMBER = Long.MAX_VALUE;
 
     private static final Checker HELP = new TextChecker(
