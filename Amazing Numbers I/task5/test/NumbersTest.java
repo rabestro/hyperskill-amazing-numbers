@@ -31,12 +31,7 @@ public class NumbersTest extends StageTest {
             "The first line of number''s properties should contains \"{1}\"."
     );
     private static final Checker LINES_IN_CARD = new LinesChecker(7 + 1);
-    private static final Checker LIST_CHECKER = new AbstractChecker("The list is incorrect") {
-        @Override
-        public boolean test(UserProgram program) {
-            return true;
-        }
-    };
+
     private final UserProgram program = new UserProgram();
     private final long[] notNaturalNumbers = {-1, -2, -3, -4, -5};
 
@@ -109,7 +104,7 @@ public class NumbersTest extends StageTest {
                 .check(ENTER_NUMBER)
                 .execute("1 " + TEST_FIRST_NUMBERS)
                 .check(new LinesChecker(TEST_FIRST_NUMBERS + 1))
-                .check(LIST_CHECKER)
+                .check(new ListChecker(1, TEST_FIRST_NUMBERS))
                 .execute(0)
                 .finished()
                 .result();
