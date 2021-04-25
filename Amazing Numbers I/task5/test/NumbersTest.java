@@ -2,8 +2,8 @@ import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
-import util.NumberProperties;
 import util.TextChecker;
+import util.UserProgram;
 
 import java.text.MessageFormat;
 import java.util.Random;
@@ -15,13 +15,10 @@ public class NumbersTest extends StageTest {
     private static final long RANDOM_NUMBERS_TESTS = 20;
     private static final long TEST_FIRST_NUMBERS = 20;
     private static final long MAX_NUMBER = Long.MAX_VALUE;
-    private final TextChecker checker = new TextChecker()
+    private final UserProgram checker = new UserProgram()
+            .add(Key.HELP, new TextChecker("supported requests",
+                    "The program should display an instruction for the user"))
             .add($ -> {
-                $.key = Key.HELP;
-                $.regexp = "supported requests";
-                $.feedback = "The program should display an instruction for the user";
-                $.flags += Pattern.LITERAL;
-            }).add($ -> {
                 $.key = Key.ENTER_NUMBER;
                 $.regexp = "natural number";
                 $.feedback = "The program should ask for a natural number.";

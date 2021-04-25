@@ -1,5 +1,3 @@
-package util;
-
 import java.util.Optional;
 import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
@@ -20,11 +18,16 @@ public enum NumberProperties implements LongPredicate {
 
     private final LongPredicate hasProperty;
     private final Pattern pattern = Pattern.compile(
-            name().toLowerCase() + "\\s*[:-]\\s*(?<value>true|false)",
+            name() + "\\s*[:-]\\s*(?<value>true|false)",
             Pattern.CASE_INSENSITIVE);
 
     NumberProperties(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
+    }
+
+    public Optional<String> extractValue(String output) {
+        final var matcher = pattern.matcher(output);
+        return matcher.find() ? Optional.of(matcher.group("value")) : Optional.empty();
     }
 
     @Override
@@ -32,8 +35,4 @@ public enum NumberProperties implements LongPredicate {
         return hasProperty.test(number);
     }
 
-    public Optional<String> extractValue(String output) {
-        final var matcher = pattern.matcher(output);
-        return matcher.find() ? Optional.of(matcher.group("value")) : Optional.empty();
-    }
 }
