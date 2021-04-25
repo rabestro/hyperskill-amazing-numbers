@@ -1,8 +1,8 @@
 type: edu
 files:
-- name: test/Tests.java
-  visible: false
-- name: src/numbers/Main.java
-  visible: true
-- name: src/numbers/NumberProperties.java
-  visible: true
+  - name: test/Tests.java
+    visible: false
+  - name: src/numbers/Main.java
+    visible: true
+  - name: src/numbers/NumberProperties.java
+    visible: true

@@ -15,7 +15,7 @@ public enum NumberProperties implements LongPredicate {
     }),
     GAPFUL(number -> number > 100 &&
             number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
-    HARSHAD(x -> x % digitsSum(x) == 0);
+    SPY(x -> digitsSum(x) == digitsProduct(x));
 
     private final LongPredicate hasProperty;
     private final Pattern pattern = Pattern.compile(
@@ -26,6 +26,22 @@ public enum NumberProperties implements LongPredicate {
         this.hasProperty = hasProperty;
     }
 
+    public static long digitsSum(long x) {
+        long sum = 0;
+        for (long i = x; i > 0; i /= 10) {
+            sum += i % 10;
+        }
+        return sum;
+    }
+
+    public static long digitsProduct(long x) {
+        long product = 1;
+        for (long i = x; i > 0; i /= 10) {
+            product *= i % 10;
+        }
+        return product;
+    }
+
     public Optional<String> extractValue(String output) {
         final var matcher = pattern.matcher(output);
         return matcher.find() ? Optional.of(matcher.group("value")) : Optional.empty();
@@ -34,13 +50,5 @@ public enum NumberProperties implements LongPredicate {
     @Override
     public boolean test(long number) {
         return hasProperty.test(number);
-    }
-
-    public static long digitsSum(long x) {
-        long sum = 0;
-        for (long i = x; i > 0; i /= 10) {
-            sum += i % 10;
-        }
-        return sum;
     }
 }

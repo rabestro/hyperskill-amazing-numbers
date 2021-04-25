@@ -11,7 +11,7 @@ public class Main {
         printHelp();
 
         while (true) {
-            System.out.printf("%nEnter a natural number: ");
+            System.out.printf("%nEnter a request: ");
             final var data = scanner.nextLine().split(" ");
             System.out.println();
             if (data[0].isBlank()) {

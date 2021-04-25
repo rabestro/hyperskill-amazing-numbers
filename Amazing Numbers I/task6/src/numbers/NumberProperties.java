@@ -1,11 +1,11 @@
 package numbers;
 
 import java.util.Arrays;
+import java.util.StringJoiner;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
-import static java.util.stream.Collectors.joining;
 
 public enum NumberProperties implements LongPredicate {
     EVEN(x -> x % 2 == 0),
@@ -16,48 +16,32 @@ public enum NumberProperties implements LongPredicate {
     HARSHAD(x -> x % digitsSum(x) == 0),
     SPY(x -> digitsSum(x) == digitsProduct(x));
 
-    public static String FORMAT = "%12s: %b%n";
-    public static long number = 0;
+    private final LongPredicate hasProperty;
 
-    private final LongPredicate calculateProperty;
-
-    NumberProperties(LongPredicate calculateProperty) {
-        this.calculateProperty = calculateProperty;
+    NumberProperties(LongPredicate hasProperty) {
+        this.hasProperty = hasProperty;
     }
 
     public static String shortProperties(long x) {
-        number = x;
-        return stream()
-                .filter(NumberProperties::hasProperty)
-                .map(NumberProperties::name)
-                .map(String::toLowerCase)
-                .collect(joining(", "));
+        final var sj = new StringJoiner(", ", String.format("%,16d is ", x), "");
+        for (var property : NumberProperties.values()) {
+            if (property.test(x)) {
+                sj.add(property.name().toLowerCase());
+            }
+        }
+        return sj.toString();
     }
 
     public static String fullProperties(long x) {
-        number = x;
-        final var prefix = String.format("Properties of %,d%n", number);
-        return stream()
-                .map(NumberProperties::toString)
-                .collect(joining("", prefix, ""));
+        final var sj = new StringJoiner("", String.format("Properties of %,d%n", x), "");
+        for (var property : NumberProperties.values()) {
+            sj.add(String.format("%12s: %b%n", property.name().toLowerCase(), property.test(x)));
+        }
+        return sj.toString();
     }
 
     public static Stream<NumberProperties> stream() {
         return Arrays.stream(NumberProperties.values());
-    }
-
-    @Override
-    public String toString() {
-        return String.format(FORMAT, name().toLowerCase(), calculateProperty.test(number));
-    }
-
-    public boolean hasProperty() {
-        return calculateProperty.test(number);
-    }
-
-    @Override
-    public boolean test(long number) {
-        return calculateProperty.test(number);
     }
 
     public static long digitsSum(long x) {
@@ -74,5 +58,10 @@ public enum NumberProperties implements LongPredicate {
             product *= i % 10;
         }
         return product;
+    }
+
+    @Override
+    public boolean test(long number) {
+        return hasProperty.test(number);
     }
 }
