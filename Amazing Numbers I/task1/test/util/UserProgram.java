@@ -4,8 +4,6 @@ import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
 public final class UserProgram {
-    public static Checker FINISH_CHECKER = new FinishChecker("Program should finish.");
-
     private TestedProgram program;
     private CheckResult result = CheckResult.correct();
 
@@ -42,7 +40,7 @@ public final class UserProgram {
     }
 
     public UserProgram finished() {
-        return FINISH_CHECKER.apply(this);
+        return new FinishChecker().apply(this);
     }
 
     public String getOutput() {
