@@ -2,10 +2,6 @@ package util;
 
 public class FinishChecker extends AbstractChecker {
 
-    protected FinishChecker() {
-        this("Program should finish at this moment.");
-    }
-
     protected FinishChecker(String feedback) {
         super(feedback);
     }
