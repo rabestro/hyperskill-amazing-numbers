@@ -22,6 +22,7 @@ public class Main {
             }
             printProperties(number);
         }
+        System.out.println("Goodbye!");
     }
 
     private static void printProperties(long number) {
