@@ -34,5 +34,4 @@ public class NumbersTest extends StageTest {
                 .result();
     }
 
-
 }

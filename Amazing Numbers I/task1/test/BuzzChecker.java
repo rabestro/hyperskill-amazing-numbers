@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class BuzzChecker extends AbstractChecker {
     private static final Pattern BUZZ_NUMBER = Pattern.compile(
-            "is(?<buzz>n't|not)?( a)? buzz", Pattern.CASE_INSENSITIVE);
+            "is(?<buzz>n't| not)?( a)? buzz", Pattern.CASE_INSENSITIVE);
     private static final Pattern EXPLANATION = Pattern.compile(
             "(neither )?(divisible by 7)? ?((nor|and) it )?(ends with 7)?",
             Pattern.CASE_INSENSITIVE);
@@ -18,8 +18,8 @@ public class BuzzChecker extends AbstractChecker {
 
     @Override
     public boolean test(UserProgram program) {
-        final var matcher = BUZZ_NUMBER.matcher(program.getOutput());
-        if (!matcher.matches()) {
+        var matcher = BUZZ_NUMBER.matcher(program.getOutput());
+        if (!matcher.find()) {
             feedback = "You should check whether is the number is a Buzz number or not.";
             return false;
         }
