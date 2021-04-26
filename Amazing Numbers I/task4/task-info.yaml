@@ -6,3 +6,7 @@ files:
   visible: true
 - name: test/NumbersTest.java
   visible: false
+- name: test/util/UserProgram.java
+  visible: false
+- name: test/util/RegexChecker.java
+  visible: false

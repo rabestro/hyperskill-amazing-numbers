@@ -10,7 +10,7 @@ public class TextChecker extends AbstractChecker {
     public TextChecker(String contains, String feedback) {
         super(feedback);
         parameters = new Object[]{contains};
-        this.expected = contains;
+        this.expected = contains.toLowerCase();
     }
 
     @Override

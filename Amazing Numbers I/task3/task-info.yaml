@@ -4,3 +4,5 @@ files:
   visible: true
 - name: src/numbers/NumberProperties.java
   visible: true
+- name: test/util/NumberProperties.java
+  visible: false
