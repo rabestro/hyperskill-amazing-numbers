@@ -41,6 +41,7 @@ public class Main {
                     .mapToObj(NumberProperties::shortProperties)
                     .forEach(System.out::println);
         }
+        System.out.println("Goodbye!");
     }
 
     private static long getNaturalNumber(final String input) {

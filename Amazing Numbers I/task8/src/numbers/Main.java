@@ -8,6 +8,8 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        System.out.println("Welcome to Amazing Numbers!");
+        printHelp();
         main:
         while (true) {
             System.out.printf("%nEnter a natural number: ");
@@ -50,6 +52,7 @@ public class Main {
                     .limit(count)
                     .forEach(Main::printProperties);
         }
+        System.out.println("Goodbye!");
     }
 
     private static void printProperties(long number) {
@@ -61,5 +64,16 @@ public class Main {
             return -1;
         }
         return Long.parseLong(input);
+    }
+
+    private static void printHelp() {
+        System.out.println();
+        System.out.println("Supported requests:");
+        System.out.println("- one natural number to print its properties;");
+        System.out.println("- two natural numbers separated by space:");
+        System.out.println("  - a starting number for the list;");
+        System.out.println("  - a count of numbers in the list;");
+        System.out.println("- two natural numbers and properties to search for");
+        System.out.println("- 0 for the exit. ");
     }
 }
