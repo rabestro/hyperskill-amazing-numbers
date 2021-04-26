@@ -18,7 +18,7 @@ public class BuzzChecker extends AbstractChecker {
 
     @Override
     public boolean test(UserProgram program) {
-        var matcher = BUZZ_NUMBER.matcher(program.getOutput());
+        final var matcher = BUZZ_NUMBER.matcher(program.getOutput());
         if (!matcher.find()) {
             feedback = "You should check whether is the number is a Buzz number or not.";
             return false;
@@ -26,7 +26,7 @@ public class BuzzChecker extends AbstractChecker {
         final var isDivisible = number % 7 == 0;
         final var isEndsWith7 = number % 10 == 7;
         final var isBuzz = isDivisible || isEndsWith7;
-        final var actual = matcher.group("buzz").isEmpty();
+        final var actual = matcher.group("buzz") == null;
 
         if (actual != isBuzz) {
             feedback = "For {0} expected: \"is{1} a Buzz number\". Actual output: \"is{2} a Buzz number.";
@@ -40,15 +40,15 @@ public class BuzzChecker extends AbstractChecker {
                 : "ends with 7"
                 : "neither divisible by 7 nor it ends with 7";
 
-        if (!matcher.usePattern(EXPLANATION).find()) {
+        if (!program.getOutput().toLowerCase().contains(explanation)) {
             feedback = "The program should print an explanation by which criterion this number is a buzz number";
             return false;
         }
-        if (!matcher.group().equalsIgnoreCase(explanation)) {
-            feedback = "Expected explanation is \"{0}\". Actual explanation is \"{1}\".";
-            parameters = new Object[]{explanation, matcher.group()};
-            return false;
-        }
+//        if (!matcher.group().equalsIgnoreCase(explanation)) {
+//            feedback = "Expected explanation is \"{0}\". Actual explanation is \"{1}\".";
+//            parameters = new Object[]{explanation, matcher.group()};
+//            return false;
+//        }
         return true;
     }
 }
