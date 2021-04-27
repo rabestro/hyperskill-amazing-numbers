@@ -11,10 +11,14 @@ public final class NumbersTest extends StageTest {
     private static final long RANDOM_TESTS = 20;
     private static final long FIRST_NUMBERS = 15;
 
-    private static final Checker ASK_FOR_NUMBER = new RegexChecker("enter( a)? natural number",
-            "The program should ask the user to enter a natural number.");
-    private static final Checker ERROR_MESSAGE = new RegexChecker("number is( not|n't) natural",
-            "Number {0} is not natural. The program should print an error message.");
+    private static final Checker ASK_FOR_NUMBER = new RegexChecker(
+            "enter( a)? natural number",
+            "The program should ask the user to enter a natural number."
+    );
+    private static final Checker ERROR_MESSAGE = new RegexChecker(
+            "number is( not|n't) natural",
+            "Number {0} is not natural. The program should print an error message."
+    );
 
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 

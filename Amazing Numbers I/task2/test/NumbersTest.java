@@ -1,100 +1,64 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
-import util.TextChecker;
+import util.Checker;
+import util.LinesChecker;
+import util.RegexChecker;
+import util.UserProgram;
 
-import java.util.regex.Pattern;
+import java.util.Random;
+import java.util.stream.LongStream;
 
-public class NumbersTest extends StageTest {
+public final class NumbersTest extends StageTest {
+    private static final Random random = new Random();
+    private static final long RANDOM_TESTS = 20;
+    private static final long FIRST_NUMBERS = 15;
 
-    private enum Key {ENTER_NUMBER, BUZZ_NUMBER}
-
-    private static final TextChecker checker = new TextChecker();
-
-    private final long[] number = {1, 2, 3, 4, 5, 9_223_372_036_854_775_807L};
-
-    @DynamicTest(data = "number", order = 1)
-    CheckResult simpleTest(final long number) {
-        final var expected = number % 2 == 0 ? "even" : "odd";
-        return checker.start()
-                .check($ -> {
-                    $.key = Key.ENTER_NUMBER;
-                    $.regexp = "natural number";
-                    $.feedback = "The program should ask for a natural number.";
-                    $.flags += Pattern.LITERAL;
-                })
-                .execute(number)
-                .contains(expected, "Number {0} should be {1}.")
-                .finish()
-                .correct();
-    }
+    private static final Checker ASK_FOR_NUMBER = new RegexChecker(
+            "enter( a)? natural number",
+            "The program should ask the user to enter a natural number."
+    );
+    private static final Checker ERROR_MESSAGE = new RegexChecker(
+            "number is( not|n't) natural",
+            "Number {0} is not natural. The program should print an error message."
+    );
+    private static final Checker PROPERTIES_OF = new RegexChecker(
+            "properties of \\d",
+            "The first line of number''s properties should contains \"Properties of {0}\"."
+    );
+    private static final Checker PROFILE_LINES = new LinesChecker(NumberProperties.values().length + 1);
 
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 
-    @DynamicTest(data = "notNaturalNumbers", order = 10)
+    @DynamicTest(data = "notNaturalNumbers", order = 5)
     CheckResult notNaturalNumbersTest(final long number) {
-        return checker.start()
-                .check(Key.ENTER_NUMBER)
+        return new UserProgram()
+                .start()
+                .check(ASK_FOR_NUMBER)
                 .execute(number)
-                .check($ -> {
-                    $.regexp = "(this|the) number is( not|n't) natural";
-                    $.feedback = "Number {0} is not natural. Expected error message.";
-                })
-                .finish()
-                .correct();
+                .check(ERROR_MESSAGE)
+                .finished()
+                .result();
     }
 
-    private final long[] divisible = {7, 14, 21, 28, 35, 123 * 7, 578 * 7, 9865 * 7};
-
-    @DynamicTest(data = "divisible", order = 20)
-    CheckResult divisibleNumbers(final long number) {
-        return checker.start()
-                .check(Key.ENTER_NUMBER)
-                .execute(number)
-                .check($ -> {
-                    $.key = Key.BUZZ_NUMBER;
-                    $.regexp = "is(?: a| the)? buzz( number)?";
-                    $.feedback = "Not found message that {0} is a Buzz number.";
-                })
-                .contains("explanation", "The output should contains explanation.")
-                .contains("is divisible by", "Not found message that {0} {1} 7")
-                .finish()
-                .correct();
+    private long[] numbers() {
+        return LongStream.concat(
+                LongStream.range(1, FIRST_NUMBERS),
+                random.longs(RANDOM_TESTS, 1, Short.MAX_VALUE)
+        ).toArray();
     }
 
-    private final long[] endsWith7 = {17, 27, 97, 107, 308687, 9821007, 204782607};
-
-    @DynamicTest(data = "endsWith7", order = 30)
-    CheckResult endsWith7Numbers(final long number) {
-        return checker.start()
-                .check(Key.ENTER_NUMBER)
+    @DynamicTest(data = "numbers", order = 10)
+    CheckResult naturalNumbersTest(long number) {
+        return new UserProgram()
+                .start()
+                .check(ASK_FOR_NUMBER)
                 .execute(number)
-                .check(Key.BUZZ_NUMBER)
-                .contains("explanation", "The output should contains explanation.")
-                .contains("ends with", "Not found message that {0} {1} 7")
-                .finish()
-                .correct();
-    }
-
-    private final long[] notBuzz = {6, 11, 18, 29, 34};
-
-    @DynamicTest(data = "notBuzz", order = 30)
-    CheckResult notBuzzNumbers(final long number) {
-        return checker.start()
-                .check(Key.ENTER_NUMBER)
-                .execute(number)
-                .check($ -> {
-                    $.regexp = "is( not|n't)(?: a| the)? buzz( number)?";
-                    $.feedback = "Not found message that {0} is not a Buzz number.";
-                })
-                .contains("explanation", "The output should contains explanation.")
-                .check($ -> {
-                    $.regexp = "is neither divisible by 7 nor it ends with 7";
-                    $.feedback = "Not found message that {0} is not a Buzz number.";
-                })
-                .contains("is neither divisible by 7 nor it ends with 7", "Not found message that {0} {1}")
-                .finish()
-                .correct();
+                .check(PROPERTIES_OF)
+                .check(PROFILE_LINES)
+                .check(new PropertiesChecker(number))
+                .finished()
+                .result();
     }
 
 }
