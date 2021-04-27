@@ -5,10 +5,10 @@ import java.util.regex.Pattern;
 
 public class BuzzChecker extends AbstractChecker {
     private static final Pattern BUZZ_NUMBER = Pattern.compile(
-            "is(?<buzz>n't| not)?( a)? buzz", Pattern.CASE_INSENSITIVE);
+            "is(?<buzz>n't| not)?+( a)?+ buzz", Pattern.CASE_INSENSITIVE);
     private static final Pattern EXPLANATION = Pattern.compile(
-            "(neither )?(divisible by 7)? ?((nor|and) it )?(ends with 7)?",
-            Pattern.CASE_INSENSITIVE);
+            "divisible by 7 and it ends with 7|divisible by 7|ends with 7"
+                    + "|neither divisible by 7 nor it ends with 7", Pattern.CASE_INSENSITIVE);
 
     private final long number;
 
@@ -40,15 +40,16 @@ public class BuzzChecker extends AbstractChecker {
                 : "ends with 7"
                 : "neither divisible by 7 nor it ends with 7";
 
-        if (!program.getOutput().toLowerCase().contains(explanation)) {
+
+        if (!matcher.usePattern(EXPLANATION).find()) {
             feedback = "The program should print an explanation by which criterion this number is a buzz number";
             return false;
         }
-//        if (!matcher.group().equalsIgnoreCase(explanation)) {
-//            feedback = "Expected explanation is \"{0}\". Actual explanation is \"{1}\".";
-//            parameters = new Object[]{explanation, matcher.group()};
-//            return false;
-//        }
+        if (!matcher.group().equalsIgnoreCase(explanation)) {
+            feedback = "Expected explanation is \"{0}\". Actual explanation is \"{1}\".";
+            parameters = new Object[]{explanation, matcher.group()};
+            return false;
+        }
         return true;
     }
 }
