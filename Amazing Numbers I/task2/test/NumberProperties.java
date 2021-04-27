@@ -9,12 +9,11 @@ public enum NumberProperties implements LongPredicate {
     DUCK(x -> String.valueOf(x).indexOf('0') != -1);
 
     private final LongPredicate hasProperty;
-    private final Pattern pattern = Pattern.compile(
-            name() + "\\s*[:-]\\s*(?<value>true|false)",
-            Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern;
 
     NumberProperties(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
+        this.pattern = Pattern.compile(name() + "\\s*[:-]\\s*(?<value>true|false)", Pattern.CASE_INSENSITIVE);
     }
 
     @Override
@@ -24,6 +23,7 @@ public enum NumberProperties implements LongPredicate {
 
     public Optional<String> extractValue(String output) {
         final var matcher = pattern.matcher(output);
-        return matcher.find() ? Optional.of(matcher.group("value")) : Optional.empty();
+        matcher.find();
+        return Optional.ofNullable(matcher.group("value"));
     }
 }
