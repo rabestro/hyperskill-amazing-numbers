@@ -1,21 +1,23 @@
 import util.AbstractChecker;
 import util.UserProgram;
 
-public class CardChecker extends AbstractChecker {
+public class PropertiesChecker extends AbstractChecker {
     private final long number;
 
-    public CardChecker(long number) {
-        super("Incorrect card for number {0}");
-        parameters = new Object[]{number};
+    public PropertiesChecker(long number) {
         this.number = number;
+        validator = this::test;
     }
 
-    @Override
     public boolean test(UserProgram program) {
         for (var property : NumberProperties.values()) {
-            final var name = property.name().toLowerCase();
+            final var name = property.name();
 
-            program.contains(name, "No property with name \"{0}\"");
+            if (!program.getOutput().toLowerCase().contains(name.toLowerCase())) {
+                feedback = "Property \"{0}\" not found in the output.";
+                parameters = new Object[]{name};
+                return false;
+            }
 
             final var expected = property.test(number);
             final var actualValue = property.extractValue(program.getOutput());
@@ -25,7 +27,7 @@ public class CardChecker extends AbstractChecker {
                 parameters = new Object[]{name, expected};
                 return false;
             }
-            final var actual = Boolean.parseBoolean(actualValue.get());
+            final var actual = actualValue.get();
 
             if (expected != actual) {
                 feedback = "For property {0} the expected value is {1} but found {2}.";

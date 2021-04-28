@@ -3,9 +3,9 @@ package util;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
-public final class UserProgram {
-    public static Checker FINISH_CHECKER = new FinishChecker("Program should finish.");
+import java.util.function.Function;
 
+public final class UserProgram {
     private TestedProgram program;
     private CheckResult result = CheckResult.correct();
 
@@ -23,7 +23,7 @@ public final class UserProgram {
         this.result = result;
     }
 
-    public UserProgram check(final Checker checker) {
+    public UserProgram check(final Function<UserProgram, UserProgram> checker) {
         return checker.apply(this);
     }
 
@@ -35,14 +35,6 @@ public final class UserProgram {
         this.input = userInput;
         output = program.execute(userInput.toString());
         return this;
-    }
-
-    public UserProgram contains(String expected, String error) {
-        return new TextChecker(expected, error).apply(this);
-    }
-
-    public UserProgram finished() {
-        return FINISH_CHECKER.apply(this);
     }
 
     public String getOutput() {

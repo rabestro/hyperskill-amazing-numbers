@@ -1,20 +1,18 @@
 package util;
 
 public class TextChecker extends AbstractChecker {
-    private final String expected;
 
-    public TextChecker(String contains) {
-        this(contains, "The program output doesn''t contains \"{0}\".");
+    public TextChecker(String expected) {
+        this(expected, "Expected that the output contains \"{2}\".");
     }
 
-    public TextChecker(String contains, String feedback) {
+    public TextChecker(String expected, String feedback) {
         super(feedback);
-        parameters = new Object[]{contains};
-        this.expected = contains;
+
+        validator = program -> {
+            parameters = new Object[]{program.getInput(), program.getOutput(), expected};
+            return program.getOutput().toLowerCase().contains(expected.toLowerCase());
+        };
     }
 
-    @Override
-    public boolean test(UserProgram program) {
-        return program.getOutput().toLowerCase().contains(expected);
-    }
 }

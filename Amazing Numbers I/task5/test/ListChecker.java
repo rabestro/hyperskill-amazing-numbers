@@ -19,11 +19,11 @@ public class ListChecker extends AbstractChecker {
 
     public ListChecker(long start, long count) {
         super("The list is incorrect");
+        this.validator = this::test;
         this.start = start;
         this.count = count;
     }
 
-    @Override
     public boolean test(UserProgram program) {
         final var lines = program.getOutput()
                 .lines()

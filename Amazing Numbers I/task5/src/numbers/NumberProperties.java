@@ -1,7 +1,10 @@
 package numbers;
 
+import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.function.LongPredicate;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
 
@@ -14,7 +17,8 @@ public enum NumberProperties implements LongPredicate {
         final var digits = String.valueOf(number);
         return new StringBuilder(digits).reverse().toString().equals(digits);
     }),
-    GAPFUL(x -> x > 100 && x % (getNumericValue(String.valueOf(x).charAt(0)) * 10L + x % 10) == 0);
+    GAPFUL(x -> x > 100 && x % (getNumericValue(String.valueOf(x).charAt(0)) * 10L + x % 10) == 0),
+    SPY(x -> digits(x).sum() == digits(x).reduce(1L, (a, b) -> a * b));
 
     private final LongPredicate hasProperty;
 
@@ -44,6 +48,14 @@ public enum NumberProperties implements LongPredicate {
     @Override
     public boolean test(long number) {
         return hasProperty.test(number);
+    }
+
+    private static LongStream digits(long number) {
+        return Long.toString(number).chars().mapToLong(Character::getNumericValue);
+    }
+
+    public static Stream<NumberProperties> stream() {
+        return Arrays.stream(NumberProperties.values());
     }
 
 }

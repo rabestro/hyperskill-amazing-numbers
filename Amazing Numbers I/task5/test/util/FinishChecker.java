@@ -2,12 +2,8 @@ package util;
 
 public class FinishChecker extends AbstractChecker {
 
-    protected FinishChecker(String feedback) {
+    public FinishChecker(String feedback) {
         super(feedback);
-    }
-
-    @Override
-    public boolean test(UserProgram program) {
-        return program.getTestedProgram().isFinished();
+        validator = program -> program.getTestedProgram().isFinished();
     }
 }
