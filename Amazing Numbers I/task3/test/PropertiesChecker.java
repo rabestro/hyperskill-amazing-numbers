@@ -13,7 +13,11 @@ public class PropertiesChecker extends AbstractChecker {
         for (var property : NumberProperties.values()) {
             final var name = property.name().toLowerCase();
 
-            program.contains(name, "No property with name \"{0}\"");
+            if (!program.getOutput().toLowerCase().contains(name)) {
+                feedback = "No property with name \"{0}\" found in the output.";
+                parameters = new Object[]{name};
+                return false;
+            }
 
             final var expected = property.test(number);
             final var actualValue = property.extractValue(program.getOutput());

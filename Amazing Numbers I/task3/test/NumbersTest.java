@@ -10,6 +10,7 @@ import java.util.stream.LongStream;
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
     private static final long RANDOM_TESTS = 20;
+    private static final long NEGATIVE_NUMBERS_TESTS = 5;
     private static final long FIRST_NUMBERS = 15;
 
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
@@ -36,10 +37,13 @@ public final class NumbersTest extends StageTest {
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
     );
-    private static final Checker PROFILE_LINES = new LinesChecker(NumberProperties.values().length + 1);
 
     private static final Checker RUNNING = new RunnerChecker(
-            "The program should continue to work after displaying an error message"
+            "The program should continue to work till the user enter \"0\"."
+    );
+
+    private static final Checker FINISHED = new FinishChecker(
+            "The program should finish after the user enter \"0\"."
     );
 
     private UserProgram program = new UserProgram();
@@ -52,12 +56,12 @@ public final class NumbersTest extends StageTest {
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
-                .finished()
+                .check(FINISHED)
                 .result();
     }
 
     private long[] getNegativeNumbers() {
-        return random.longs(RANDOM_TESTS, Short.MIN_VALUE, -1).toArray();
+        return random.longs(NEGATIVE_NUMBERS_TESTS, Short.MIN_VALUE, -1).toArray();
     }
 
     @DynamicTest(data = "getNegativeNumbers", order = 10)
@@ -73,30 +77,36 @@ public final class NumbersTest extends StageTest {
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
-                .finished()
+                .check(FINISHED)
                 .result();
     }
 
-    private long[] getNumbers() {
+    private LongStream getNumbers() {
         return LongStream.concat(
                 LongStream.range(1, FIRST_NUMBERS),
-                random.longs(RANDOM_TESTS, 1, Short.MAX_VALUE)
-        ).toArray();
+                random.longs(RANDOM_TESTS, 1, Long.MAX_VALUE)
+        );
     }
 
-    @DynamicTest(data = "getNumbers", order = 20)
-    CheckResult naturalNumbersTest(long number) {
-        return new UserProgram()
-                .start()
-                .check(WELCOME)
-                .check(HELP)
+    @DynamicTest(order = 20)
+    CheckResult naturalNumbersTest() {
+        program.start().check(WELCOME).check(HELP);
+
+        getNumbers()
+                .forEach(number -> program
+                        .check(ASK_REQUEST)
+                        .execute(number)
+                        .check(PROPERTIES_OF)
+                        .check(new PropertiesChecker(number))
+                        .check(RUNNING));
+
+        return program
+                .check(RUNNING)
                 .check(ASK_REQUEST)
-                .execute(number)
-                .check(PROPERTIES_OF)
-                .check(PROFILE_LINES)
-                .check(new PropertiesChecker(number))
-                .finished()
+                .execute(0)
+                .check(FINISHED)
                 .result();
     }
+
 
 }

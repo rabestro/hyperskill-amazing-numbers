@@ -37,14 +37,6 @@ public final class UserProgram {
         return this;
     }
 
-    public UserProgram contains(String expected, String error) {
-        return new TextChecker(expected, error).apply(this);
-    }
-
-    public UserProgram finished() {
-        return new FinishChecker().apply(this);
-    }
-
     public String getOutput() {
         return output;
     }

@@ -6,7 +6,11 @@ public enum NumberProperties implements LongPredicate {
     EVEN(x -> x % 2 == 0),
     ODD(x -> x % 2 != 0),
     BUZZ(x -> x % 7 == 0 || x % 10 == 7),
-    DUCK(x -> String.valueOf(x).indexOf('0') != -1);
+    DUCK(x -> String.valueOf(x).indexOf('0') != -1),
+    PALINDROMIC(number -> {
+        final var digits = String.valueOf(number);
+        return new StringBuilder(digits).reverse().toString().equals(digits);
+    });
 
     private final LongPredicate hasProperty;
     private final Pattern pattern;
