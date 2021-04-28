@@ -5,7 +5,6 @@ import util.*;
 
 import java.util.Random;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 import java.util.stream.LongStream;
 
 public final class NumbersTest extends StageTest {
@@ -25,9 +24,9 @@ public final class NumbersTest extends StageTest {
                             "0 for( the)? exit",
                             "Display the instruction on how to exit")
                     );
-    private static final Checker ASK_FOR_NUMBER = new RegexChecker(
-            "enter( a)? natural number",
-            "The program should ask the user to enter a natural number."
+    private static final Checker ASK_REQUEST = new RegexChecker(
+            "enter( a)? request",
+            "The program should ask the user to enter a request."
     );
     private static final Checker ERROR_MESSAGE = new RegexChecker(
             "number is( not|n't) natural",
@@ -43,20 +42,38 @@ public final class NumbersTest extends StageTest {
             "The program should continue to work after displaying an error message"
     );
 
-    private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
+    private UserProgram program = new UserProgram();
 
-    @DynamicTest(data = "notNaturalNumbers", order = 10)
-    CheckResult notNaturalNumbersTest(final long number) {
-        return new UserProgram()
+    @DynamicTest(order = 5)
+    CheckResult welcomeTest() {
+        return program.start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .finished()
+                .result();
+    }
+
+    private long[] getNegativeNumbers() {
+        return random.longs(RANDOM_TESTS, Short.MIN_VALUE, -1).toArray();
+    }
+
+    @DynamicTest(data = "getNegativeNumbers", order = 10)
+    CheckResult notNaturalNumbersTest(final long negativeNumber) {
+        return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
-                .check(ASK_FOR_NUMBER)
-                .execute(number)
+                .check(ASK_REQUEST)
+                .execute(negativeNumber)
                 .check(ERROR_MESSAGE)
                 .check(HELP)
                 .check(RUNNING)
-                .check(ASK_FOR_NUMBER)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .finished()
                 .result();
     }
 
@@ -73,7 +90,7 @@ public final class NumbersTest extends StageTest {
                 .start()
                 .check(WELCOME)
                 .check(HELP)
-                .check(ASK_FOR_NUMBER)
+                .check(ASK_REQUEST)
                 .execute(number)
                 .check(PROPERTIES_OF)
                 .check(PROFILE_LINES)

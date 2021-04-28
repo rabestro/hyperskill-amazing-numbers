@@ -6,19 +6,37 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        System.out.println("Enter a natural number:");
-        final var number = scanner.nextLong();
-
-        if (number > 0) {
-            System.out.printf("Properties of %,d%n", number);
-            for (var property : NumberProperties.values()) {
-                final var name = property.name().toLowerCase();
-                final var hasProperty = property.test(number);
-                System.out.printf("%12s: %s%n", name, hasProperty);
+        System.out.println("Welcome to Amazing Numbers!");
+        printHelp();
+        while (true) {
+            System.out.println();
+            System.out.println("Enter a request:");
+            final var number = scanner.nextLong();
+            if (number == 0) {
+                break;
             }
-        } else {
-            System.out.println("This number is not natural!");
+            if (number < 0) {
+                System.out.println("This number is not natural!");
+                printHelp();
+                continue;
+            }
+            printProperties(number);
+        }
+        System.out.println("Goodbye!");
+    }
+
+    private static void printProperties(long number) {
+        System.out.printf("Properties of %,d%n", number);
+        for (var property : NumberProperties.values()) {
+            final var name = property.name().toLowerCase();
+            System.out.printf("%12s: %s%n", name, property.test(number));
         }
     }
 
+    private static void printHelp() {
+        System.out.println();
+        System.out.println("Supported requests:");
+        System.out.println("- natural number to print its properties;");
+        System.out.println("- 0 for the exit.");
+    }
 }

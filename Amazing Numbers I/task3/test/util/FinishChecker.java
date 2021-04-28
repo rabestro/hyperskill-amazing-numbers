@@ -10,5 +10,4 @@ public class FinishChecker extends AbstractChecker {
         super(feedback);
         validator = program -> program.getTestedProgram().isFinished();
     }
-
 }

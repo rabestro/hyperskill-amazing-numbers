@@ -1,6 +1,7 @@
 package util;
 
 public class RunnerChecker extends AbstractChecker {
+
     public RunnerChecker() {
         this("Program should be running.");
     }

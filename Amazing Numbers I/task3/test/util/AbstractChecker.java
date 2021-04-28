@@ -5,7 +5,6 @@ import org.hyperskill.hstest.testcase.CheckResult;
 
 import java.text.MessageFormat;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 import static java.util.Objects.isNull;
 
