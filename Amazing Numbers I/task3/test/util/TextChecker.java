@@ -8,6 +8,7 @@ public class TextChecker extends AbstractChecker {
 
     public TextChecker(String expected, String feedback) {
         super(feedback);
+
         validator = program -> {
             parameters = new Object[]{program.getInput(), program.getOutput(), expected};
             return program.getOutput().toLowerCase().contains(expected.toLowerCase());
