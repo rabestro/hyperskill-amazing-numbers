@@ -1,7 +1,7 @@
-import util.AbstractChecker;
+import util.Checker;
 import util.UserProgram;
 
-public class PropertiesChecker extends AbstractChecker {
+public class PropertiesChecker extends Checker {
     private final long number;
 
     public PropertiesChecker(long number) {

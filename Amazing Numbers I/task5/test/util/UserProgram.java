@@ -49,4 +49,7 @@ public final class UserProgram {
         return program;
     }
 
+    public boolean isFinished() {
+        return program.isFinished();
+    }
 }

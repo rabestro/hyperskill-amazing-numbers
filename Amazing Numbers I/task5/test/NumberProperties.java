@@ -28,6 +28,10 @@ public enum NumberProperties implements LongPredicate {
         this.hasProperty = hasProperty;
     }
 
+    private static LongStream digits(long number) {
+        return Long.toString(number).chars().mapToLong(Character::getNumericValue);
+    }
+
     @Override
     public boolean test(long number) {
         return hasProperty.test(number);
@@ -39,10 +43,6 @@ public enum NumberProperties implements LongPredicate {
         return Optional
                 .ofNullable(matcher.group("value"))
                 .map(Boolean::valueOf);
-    }
-
-    private static LongStream digits(long number) {
-        return Long.toString(number).chars().mapToLong(Character::getNumericValue);
     }
 
 }

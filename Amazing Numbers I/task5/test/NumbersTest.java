@@ -7,6 +7,7 @@ import util.*;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.LongStream;
@@ -60,7 +61,7 @@ public final class NumbersTest extends StageTest {
     private static final Checker HELP_PROPERTIES = new TextChecker(
             "Available properties"
     );
-    private static final Checker LIST_PROPERTIES = new AbstractChecker(
+    private static final Checker LIST_PROPERTIES = new Checker(
             "If incorrect property specified then show the list of available properties.") {
         {
             validator = program -> Arrays.stream(NumberProperties.values())
@@ -75,14 +76,19 @@ public final class NumbersTest extends StageTest {
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
     );
-    private static final Checker RUNNING = new RunnerChecker(
-            "The program should continue to work till the user enter \"0\"."
+    private static final Checker RUNNING = new Checker(
+            "The program should continue to work till the user enter \"0\".",
+            Predicate.not(UserProgram::isFinished)
     );
-    private static final Checker FINISHED = new FinishChecker(
-            "The program should finish after the user enter \"0\"."
+    private static final Checker FINISHED = new Checker(
+            "The program should finish after the user enter \"0\".",
+            UserProgram::isFinished
     );
 
     private final UserProgram program = new UserProgram();
+    private final String[] wrongRequests = new String[]{
+            "1 10 gay", "40 2 bay", "37 4 8", "67 2 +y-", "2 54 Prime Number", "6 8 ...", "5 9 ,"
+    };
 
     @DynamicTest(order = 5)
     CheckResult welcomeTest() {
@@ -133,10 +139,6 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
-
-    private final String[] wrongRequests = new String[]{
-            "1 10 gay", "40 2 bay", "37 4 8", "67 2 +y-", "2 54 Prime Number", "6 8 ...", "5 9 ,"
-    };
 
     @DynamicTest(data = "wrongRequests", order = 15)
     CheckResult notNaturalSecondNumberTest(String wrongPropertyRequest) {

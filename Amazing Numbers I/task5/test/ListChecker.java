@@ -1,5 +1,5 @@
 import numbers.NumberProperties;
-import util.AbstractChecker;
+import util.Checker;
 import util.UserProgram;
 
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-public class ListChecker extends AbstractChecker {
+public class ListChecker extends Checker {
     private static final Pattern LINE_PATTERN = Pattern.compile(
             "(?<number>[\\d,. ]*\\d)\\s*(is|:|-)\\s*(?<properties>.+)",
             Pattern.CASE_INSENSITIVE);
