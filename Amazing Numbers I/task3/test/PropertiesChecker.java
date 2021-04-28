@@ -11,10 +11,10 @@ public class PropertiesChecker extends AbstractChecker {
 
     public boolean test(UserProgram program) {
         for (var property : NumberProperties.values()) {
-            final var name = property.name().toLowerCase();
+            final var name = property.name();
 
-            if (!program.getOutput().toLowerCase().contains(name)) {
-                feedback = "No property with name \"{0}\" found in the output.";
+            if (!program.getOutput().toLowerCase().contains(name.toLowerCase())) {
+                feedback = "Property \"{0}\" not found in the output.";
                 parameters = new Object[]{name};
                 return false;
             }
