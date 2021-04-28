@@ -1,105 +1,171 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
-import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
-import util.NumberProperties;
-import util.UserProgram;
+import util.*;
 
-import java.text.MessageFormat;
 import java.util.Random;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 import java.util.stream.LongStream;
 
-public class NumbersTest extends StageTest {
+public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
-    private static final long RANDOM_NUMBERS_TESTS = 20;
-    private static final long TEST_FIRST_NUMBERS = 20;
-    private static final long MAX_NUMBER = Long.MAX_VALUE;
+    private static final int NEGATIVE_NUMBERS_TESTS = 5;
+    private static final long FIRST_NUMBERS = 15;
+    private static final int RANDOM_TESTS = 10;
+    private static final int MAX_COUNT = 20;
+    private static final int MIN_START = 2;
 
-    private final UserProgram checker = new UserProgram()
-            .add($ -> {
-                $.key = Key.HELP;
-                $.regexp = "supported requests";
-                $.feedback = "The program should display an instruction for the user";
-                $.flags += Pattern.LITERAL;
-            }).add($ -> {
-                $.key = Key.REQUEST;
-                $.regexp = "enter a request";
-                $.feedback = "The program should ask for a request.";
-                $.flags += Pattern.LITERAL;
-            }).add($ -> {
-                $.key = Key.NOT_NATURAL;
-                $.regexp = "(this|the) number is( not|n't) natural";
-                $.feedback = "Number {0} is not natural. Expected error message.";
-            }).add($ -> {
-                $.key = Key.PROPERTIES;
-                $.regexp = "properties of ";
-                $.feedback = "The first line of number''s properties should contains \"{1}\".";
-                $.flags += Pattern.LITERAL;
-            });
-    private final long[] notNaturalNumbers = {-1, -2, -3, -4, -5};
 
-    @DynamicTest(data = "notNaturalNumbers", order = 10)
-    CheckResult notNaturalNumbersTest(final long number) {
-        return checker.start()
-                .check(Key.HELP)
-                .check(Key.REQUEST)
-                .execute(number)
-                .check(Key.NOT_NATURAL)
-                .check(Key.HELP)
-                .check(Key.REQUEST)
+    private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
+
+    private static final Function<UserProgram, UserProgram> HELP =
+            new TextChecker("Supported requests")
+                    .andThen(new RegexChecker(
+                            "(one|a) natural number .* properties",
+                            "Display the instruction on how to use the program")
+                    )
+                    .andThen(new RegexChecker(
+                            "two natural numbers",
+                            "In this stage the user may enter two numbers. " +
+                                    "The program should explain this in help."
+                    ))
+                    .andThen(new RegexChecker(
+                            "0 for( the)? exit",
+                            "Display the instruction on how to exit")
+                    );
+    private static final Checker ASK_REQUEST = new RegexChecker(
+            "enter( a)? request",
+            "The program should ask the user to enter a request."
+    );
+    private static final Checker ERROR_MESSAGE = new RegexChecker(
+            "number is( not|n't) natural",
+            "Number {0} is not natural. The program should print an error message."
+    );
+    private static final Checker PROPERTIES_OF = new RegexChecker(
+            "properties of \\d",
+            "The first line of number''s properties should contains \"Properties of {0}\"."
+    );
+
+    private static final Checker RUNNING = new RunnerChecker(
+            "The program should continue to work till the user enter \"0\"."
+    );
+
+    private static final Checker FINISHED = new FinishChecker(
+            "The program should finish after the user enter \"0\"."
+    );
+
+    private final UserProgram program = new UserProgram();
+
+    @DynamicTest(order = 5)
+    CheckResult welcomeTest() {
+        return program.start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
                 .execute(0)
-                .finished()
-                .correct();
+                .check(FINISHED)
+                .result();
+    }
+
+    @DynamicTest(repeat = NEGATIVE_NUMBERS_TESTS, order = 10)
+    CheckResult notNaturalNumbersTest() {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(-random.nextInt() - 1L)
+                .check(ERROR_MESSAGE)
+                .check(HELP)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
+
+    @DynamicTest(repeat = RANDOM_TESTS, order = 10)
+    CheckResult notNaturalSecondNumberTest() {
+        int first = 1 + random.nextInt();
+        int second = -random.nextInt();
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(first + " " + second)
+                .check(ERROR_MESSAGE)
+                .check(HELP)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
     }
 
     @DynamicTest(order = 20)
-    CheckResult finishByZeroTest() {
-        return checker.start()
-                .check(Key.HELP)
-                .check(Key.REQUEST)
-                .execute(-5)
-                .check(Key.NOT_NATURAL)
-                .check(Key.HELP)
-                .execute(-7635)
-                .check(Key.NOT_NATURAL)
-                .check(Key.HELP)
-                .check(Key.REQUEST)
-                .execute(0)
-                .finished()
-                .correct();
-    }
-
-    @DynamicTest(order = 30)
-    CheckResult firstAndRandomNumbersTest() {
+    CheckResult naturalNumbersTest() {
         final var numbers = LongStream.concat(
-                LongStream.range(1, TEST_FIRST_NUMBERS),
-                random.longs(RANDOM_NUMBERS_TESTS, 1, MAX_NUMBER)
+                LongStream.range(1, FIRST_NUMBERS),
+                random.longs(RANDOM_TESTS, 1, Long.MAX_VALUE)
         );
-        checker.start();
 
-        numbers.forEach(number -> {
-            checker.check(Key.REQUEST).execute(number).check(Key.PROPERTIES);
+        program.start().check(WELCOME).check(HELP);
 
-            for (var property : NumberProperties.values()) {
-                final var name = property.name().toLowerCase();
-                checker.contains(name, "The property {1} wasn''t found for number {0}.");
+        numbers.forEach(number -> program
+                .check(ASK_REQUEST)
+                .execute(number)
+                .check(PROPERTIES_OF)
+                .check(new PropertiesChecker(number))
+                .check(RUNNING));
 
-                final var expected = property.test(number);
-                final var actual = Boolean.parseBoolean(property.extractValue(checker.getOutput())
-                        .orElseThrow(() -> new WrongAnswer(
-                                "The value for property " + name + " was not found.")));
-
-                if (expected != actual) {
-                    throw new WrongAnswer(MessageFormat.format(
-                            "For property {0} the expected value is {1} but found {2}.",
-                            name, expected, actual));
-                }
-            }
-        });
-        return checker.execute(0).finished().correct();
+        return program
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
     }
 
-    private enum Key {HELP, REQUEST, NOT_NATURAL, PROPERTIES}
+    @DynamicTest(order = 40)
+    CheckResult twoNumbersTest() {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute("1 " + FIRST_NUMBERS)
+                .check(new LinesChecker(FIRST_NUMBERS + 1))
+                .check(new ListChecker(1, FIRST_NUMBERS))
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
+
+    private Object[][] getRandomTwo() {
+        return random
+                .longs(RANDOM_TESTS, MIN_START, Long.MAX_VALUE - MAX_COUNT)
+                .mapToObj(start -> new Long[]{
+                        start,
+                        (long) 1 + random.nextInt(MAX_COUNT)})
+                .toArray(Long[][]::new);
+    }
+
+    @DynamicTest(data = "getRandomTwo", order = 50)
+    CheckResult twoRandomNumbersTest(long start, long count) {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(start + " " + count)
+                .check(new LinesChecker(count + 1))
+                .check(new ListChecker(start, count))
+                .check(RUNNING)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
 
 }

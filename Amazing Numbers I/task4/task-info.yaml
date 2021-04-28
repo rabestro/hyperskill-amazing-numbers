@@ -1,12 +1,1 @@
 type: edu
-files:
-- name: src/numbers/Main.java
-  visible: true
-- name: src/numbers/NumberProperties.java
-  visible: true
-- name: test/NumbersTest.java
-  visible: false
-- name: test/util/UserProgram.java
-  visible: false
-- name: test/util/RegexChecker.java
-  visible: false

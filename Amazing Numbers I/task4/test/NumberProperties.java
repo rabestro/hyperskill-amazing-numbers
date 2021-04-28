@@ -10,6 +10,18 @@ public enum NumberProperties implements LongPredicate {
     PALINDROMIC(number -> {
         final var digits = String.valueOf(number);
         return new StringBuilder(digits).reverse().toString().equals(digits);
+    }),
+    GAPFUL(number -> {
+        if (number < 100) {
+            return false;
+        }
+        long last = number % 10;
+        long first = number / 100;
+        while (first > 10) {
+            first /= 10;
+        }
+        long divider = first * 10 + last;
+        return number % divider == 0;
     });
 
     private final LongPredicate hasProperty;

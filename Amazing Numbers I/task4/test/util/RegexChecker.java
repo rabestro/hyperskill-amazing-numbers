@@ -1,26 +1,18 @@
 package util;
 
-import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
-
-import java.text.MessageFormat;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public class RegexChecker implements Predicate<UserProgram> {
-    final Pattern expected;
-    final String feedback;
+public class RegexChecker extends AbstractChecker {
+    private final Pattern expected;
 
-    RegexChecker(final UserProgram.Arguments args) {
-        expected = Pattern.compile(args.regexp, args.flags);
-        feedback = args.feedback;
+    public RegexChecker(final String regexp, final String feedback) {
+        this(regexp, Pattern.CASE_INSENSITIVE, feedback);
     }
 
-    @Override
-    public boolean test(UserProgram actual) {
-        return expected.matcher(actual.getOutput()).find();
+    public RegexChecker(final String regexp, final int flags, final String feedback) {
+        super(feedback);
+        this.expected = Pattern.compile(regexp, flags);
+        validator = program -> expected.matcher(program.getOutput()).find();
     }
 
-    WrongAnswer getFeedback(Object... args) {
-        return new WrongAnswer(MessageFormat.format(feedback, args));
-    }
 }
