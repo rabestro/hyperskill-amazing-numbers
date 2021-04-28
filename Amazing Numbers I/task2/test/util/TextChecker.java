@@ -4,7 +4,7 @@ public class TextChecker extends AbstractChecker {
     private final String expected;
 
     public TextChecker(String expected) {
-        this(expected, "Expected that the output contains \"{0}\".");
+        this(expected, "Expected that the output contains \"{2}\".");
     }
 
     public TextChecker(String expected, String feedback) {
@@ -14,7 +14,7 @@ public class TextChecker extends AbstractChecker {
 
     @Override
     public boolean test(UserProgram program) {
-        parameters = new Object[]{program.getInput(), expected, program.getOutput()};
+        parameters = new Object[]{program.getInput(), program.getOutput(), expected};
         return program.getOutput().toLowerCase().contains(expected);
     }
 }

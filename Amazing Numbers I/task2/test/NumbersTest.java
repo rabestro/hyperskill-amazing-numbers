@@ -30,7 +30,7 @@ public final class NumbersTest extends StageTest {
 
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 
-    @DynamicTest(data = "notNaturalNumbers", order = 5)
+    @DynamicTest(data = "notNaturalNumbers", order = 10)
     CheckResult notNaturalNumbersTest(final long number) {
         return new UserProgram()
                 .start()
@@ -41,14 +41,14 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    private long[] numbers() {
+    private long[] getNumbers() {
         return LongStream.concat(
                 LongStream.range(1, FIRST_NUMBERS),
                 random.longs(RANDOM_TESTS, 1, Short.MAX_VALUE)
         ).toArray();
     }
 
-    @DynamicTest(data = "numbers", order = 10)
+    @DynamicTest(data = "getNumbers", order = 20)
     CheckResult naturalNumbersTest(long number) {
         return new UserProgram()
                 .start()
