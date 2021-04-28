@@ -218,6 +218,27 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
+    private String[] getProperties() {
+        return Arrays.stream(NumberProperties.values()).map(Enum::name).toArray(String[]::new);
+    }
+
+    @DynamicTest(data = "getProperties", order = 55)
+    CheckResult allPropertiesSearchTest(String property) {
+        final var start = 1L + random.nextInt(Short.MAX_VALUE);
+        final var count = 1L + random.nextInt(MAX_COUNT);
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(start + " " + count + " " + property)
+                .check(new LinesChecker(count + 1))
+                .check(new ListChecker(start, count, property))
+                .check(RUNNING)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
 
     @DynamicTest(repeat = RANDOM_TESTS, order = 60)
     CheckResult twoRandomNumbersAndPropertyTest() {
