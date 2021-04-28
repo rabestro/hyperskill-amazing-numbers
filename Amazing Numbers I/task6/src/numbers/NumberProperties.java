@@ -67,4 +67,6 @@ public enum NumberProperties implements LongPredicate {
     public boolean test(long number) {
         return hasProperty.test(number);
     }
+
+
 }

@@ -1,10 +1,14 @@
+import numbers.NumberProperties;
 import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import util.*;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.LongStream;
 
 public final class NumbersTest extends StageTest {
@@ -51,8 +55,22 @@ public final class NumbersTest extends StageTest {
     private static final Checker ERROR_PROPERTY = new RegexChecker(
             "(The )?property .+ (not found|is (wrong|incorrect))",
             "The request: \"{0}\" has incorrect property. "
-                    +"If incorrect property specified print the error message and list of available properties."
+                    + "If incorrect property specified print the error message and list of available properties."
     );
+    private static final Checker HELP_PROPERTIES = new TextChecker(
+            "Available properties"
+    );
+    private static final Checker LIST_PROPERTIES = new AbstractChecker(
+            "If incorrect property specified then show the list of available properties.") {
+        {
+            validator = program -> Arrays.stream(NumberProperties.values())
+                    .map(Enum::name)
+                    .map("(?i)\\b"::concat)
+                    .map(Pattern::compile)
+                    .map(p -> p.matcher(program.getOutput()))
+                    .allMatch(Matcher::find);
+        }
+    };
     private static final Checker PROPERTIES_OF = new RegexChecker(
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
@@ -109,6 +127,28 @@ public final class NumbersTest extends StageTest {
                 .execute(first + " " + negativeSecond)
                 .check(ERROR_SECOND)
                 .check(HELP)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
+
+    private final String[] wrongRequests = new String[]{
+            "1 10 gay", "40 2 bay", "37 4 8", "67 2 +y-", "2 54 Prime Number", "6 8 ...", "5 9 ,"
+    };
+
+    @DynamicTest(data = "wrongRequests", order = 15)
+    CheckResult notNaturalSecondNumberTest(String wrongPropertyRequest) {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(wrongPropertyRequest)
+                .check(ERROR_PROPERTY)
+                .check(HELP_PROPERTIES)
+                .check(LIST_PROPERTIES)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -173,6 +213,30 @@ public final class NumbersTest extends StageTest {
                 .check(new LinesChecker(count + 1))
                 .check(new ListChecker(start, count))
                 .check(RUNNING)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
+
+
+    @DynamicTest(repeat = RANDOM_TESTS, order = 60)
+    CheckResult twoRandomNumbersAndPropertyTest() {
+        final var start = 1L + random.nextInt(Short.MAX_VALUE);
+        final var count = 1L + random.nextInt(MAX_COUNT);
+        final var index = random.nextInt(NumberProperties.values().length);
+        final var property = NumberProperties.values()[index].name();
+        final var request = start + " " + count + " " + property;
+
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(request)
+                .check(new LinesChecker(count + 1))
+                .check(new ListChecker(start, count, property))
+                .check(RUNNING)
+                .check(ASK_REQUEST)
                 .execute(0)
                 .check(FINISHED)
                 .result();

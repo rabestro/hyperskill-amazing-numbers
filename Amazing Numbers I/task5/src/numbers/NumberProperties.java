@@ -18,7 +18,8 @@ public enum NumberProperties implements LongPredicate {
         return new StringBuilder(digits).reverse().toString().equals(digits);
     }),
     GAPFUL(x -> x > 100 && x % (getNumericValue(String.valueOf(x).charAt(0)) * 10L + x % 10) == 0),
-    SPY(x -> digits(x).sum() == digits(x).reduce(1L, (a, b) -> a * b));
+    //    SPY(x -> digits(x).sum() == digits(x).reduce(1L, (a, b) -> a * b));
+    SPY(x -> digitsSum(x) == digitsProduct(x));
 
     private final LongPredicate hasProperty;
 
@@ -56,6 +57,22 @@ public enum NumberProperties implements LongPredicate {
 
     public static Stream<NumberProperties> stream() {
         return Arrays.stream(NumberProperties.values());
+    }
+
+    public static long digitsSum(long x) {
+        long sum = 0;
+        for (long i = x; i > 0; i /= 10) {
+            sum += i % 10;
+        }
+        return sum;
+    }
+
+    public static long digitsProduct(long x) {
+        long product = 1;
+        for (long i = x; i > 0; i /= 10) {
+            product *= i % 10;
+        }
+        return product;
     }
 
 }

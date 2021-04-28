@@ -1,11 +1,14 @@
+import numbers.NumberProperties;
 import util.AbstractChecker;
 import util.UserProgram;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 public class ListChecker extends AbstractChecker {
     private static final Pattern LINE_PATTERN = Pattern.compile(
@@ -14,35 +17,54 @@ public class ListChecker extends AbstractChecker {
     private static final Pattern NON_DIGIT_SYMBOL = Pattern.compile("\\D");
     private static final Pattern PROPERTIES_SEPARATOR = Pattern.compile("[, ;]+");
 
-    private final long start;
-    private final long count;
+    private final long expectedCount;
+    private final long[] expectedList;
 
     public ListChecker(long start, long count) {
+        this(start, count, new String[0]);
+    }
+
+    public ListChecker(long start, long count, String properties) {
+        this(start, count, properties.split("[, ]+"));
+    }
+
+    public ListChecker(long start, long count, String[] queries) {
         super("The list is incorrect");
         this.validator = this::test;
-        this.start = start;
-        this.count = count;
+        this.expectedList = getList(start, count, queries);
+        this.expectedCount = count;
+    }
+
+    private static long[] getList(long start, long count, String[] queries) {
+        final var condition = Arrays.stream(queries).map(query -> {
+            final var isNegative = query.startsWith("-");
+            final var name = isNegative ? query.substring(1) : query;
+            final var property = NumberProperties.valueOf(name.toUpperCase());
+            return isNegative ? property.negate() : property;
+        }).reduce(number -> true, LongPredicate::and);
+
+        return LongStream.iterate(start, n -> n > 0, n -> n + 1)
+                .filter(condition).limit(count).toArray();
     }
 
     public boolean test(UserProgram program) {
         final var lines = program.getOutput()
                 .lines()
                 .filter(Predicate.not(String::isBlank))
-                .limit(count)
+                .limit(expectedCount)
                 .collect(Collectors.toUnmodifiableList());
 
-        if (lines.size() != count) {
+        if (lines.size() != expectedCount) {
             return false;
         }
-        long currentNumber = start;
 
-        for (var line : lines) {
-            final var expectedNumber = currentNumber;
-            final var matcher = LINE_PATTERN.matcher(line);
-
+        final var iterator = lines.iterator();
+        for (final long expectedNumber : expectedList) {
+            final var actualLine = iterator.next();
+            final var matcher = LINE_PATTERN.matcher(actualLine);
             if (!matcher.matches()) {
                 feedback = "Can't parse line: \"{0}\". Expected: {1} is ...";
-                parameters = new Object[]{line, expectedNumber};
+                parameters = new Object[]{actualLine, expectedNumber};
                 return false;
             }
 
@@ -78,7 +100,6 @@ public class ListChecker extends AbstractChecker {
                 feedback = "For number {0} expected properties are {1}. Actual properties are {2}.";
                 parameters = new Object[]{expectedNumber, expectedProperties, actualProperties};
             }
-            currentNumber++;
         }
         return true;
     }
