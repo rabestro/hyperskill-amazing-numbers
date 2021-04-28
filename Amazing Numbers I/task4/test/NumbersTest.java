@@ -149,9 +149,7 @@ public final class NumbersTest extends StageTest {
     private Object[][] getRandomTwo() {
         return random
                 .longs(RANDOM_TESTS, MIN_START, Long.MAX_VALUE - MAX_COUNT)
-                .mapToObj(start -> new Long[]{
-                        start,
-                        (long) 1 + random.nextInt(MAX_COUNT)})
+                .mapToObj(start -> new Long[]{start, (long) 1 + random.nextInt(MAX_COUNT)})
                 .toArray(Long[][]::new);
     }
 
