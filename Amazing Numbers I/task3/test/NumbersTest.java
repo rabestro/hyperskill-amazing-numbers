@@ -54,7 +54,9 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_FOR_NUMBER)
                 .execute(number)
                 .check(ERROR_MESSAGE)
+                .check(HELP)
                 .check(RUNNING)
+                .check(ASK_FOR_NUMBER)
                 .result();
     }
 
@@ -69,6 +71,8 @@ public final class NumbersTest extends StageTest {
     CheckResult naturalNumbersTest(long number) {
         return new UserProgram()
                 .start()
+                .check(WELCOME)
+                .check(HELP)
                 .check(ASK_FOR_NUMBER)
                 .execute(number)
                 .check(PROPERTIES_OF)
