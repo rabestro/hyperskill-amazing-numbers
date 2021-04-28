@@ -1,70 +1,68 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
-import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
-import util.NumberProperties;
-import util.TextChecker;
+import util.*;
 
-import java.text.MessageFormat;
-import java.util.regex.Pattern;
+import java.util.Random;
+import java.util.stream.LongStream;
 
-public class NumbersTest extends StageTest {
-    private enum Key {ENTER_NUMBER, NOT_NATURAL, PROPERTIES}
+public final class NumbersTest extends StageTest {
+    private static final Random random = new Random();
+    private static final long RANDOM_TESTS = 20;
+    private static final long FIRST_NUMBERS = 15;
 
-    private static final TextChecker checker = new TextChecker()
-            .add($ -> {
-                $.key = Key.ENTER_NUMBER;
-                $.regexp = "natural number";
-                $.feedback = "The program should ask for a natural number.";
-                $.flags += Pattern.LITERAL;
-            })
-            .add($ -> {
-                $.key = Key.NOT_NATURAL;
-                $.regexp = "(this|the) number is( not|n't) natural";
-                $.feedback = "Number {0} is not natural. Expected error message.";
-            })
-            .add($ -> {
-                $.key = Key.PROPERTIES;
-                $.regexp = "properties of ";
-                $.feedback = "The first line of number''s properties should contains \"{1}\".";
-                $.flags += Pattern.LITERAL;
-            });
+    private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
+    private static final Checker HELP = (Checker) new TextChecker("Supported requests")
+            .andThen(new RegexChecker("natural number .* properties",
+                    "Display the instruction on how to use the program"))
+            .andThen(new RegexChecker("0 for( the)? exit",
+                    "Display the instruction on how to exit"));
 
-    private final long[] number = {1, 2, 3, 4, 5, 6, 11, 13, 19, 222, 300, 133, 765};
-
-    @DynamicTest(data = "number", order = 1)
-    CheckResult simpleTest(final long number) {
-        checker.start()
-                .check(Key.ENTER_NUMBER)
-                .execute(number)
-                .check(Key.PROPERTIES);
-
-        for (var property : NumberProperties.values()) {
-            final var name = property.name().toLowerCase();
-            checker.contains(name, "The property {1} wasn''t found for number {0}.");
-            final var expected = property.test(number);
-            final var actual = Boolean.parseBoolean(property.extractValue(checker.getOutput())
-                    .orElseThrow(() ->
-                            new WrongAnswer("The value for property " + name + " was not found.")));
-            if (expected != actual) {
-                throw new WrongAnswer(MessageFormat.format(
-                        "For property {0} the expected value is {1} but found {2}.",
-                        name, expected, actual));
-            }
-        }
-        return checker.finish().correct();
-    }
+    private static final Checker ASK_FOR_NUMBER = new RegexChecker(
+            "enter( a)? natural number",
+            "The program should ask the user to enter a natural number."
+    );
+    private static final Checker ERROR_MESSAGE = new RegexChecker(
+            "number is( not|n't) natural",
+            "Number {0} is not natural. The program should print an error message."
+    );
+    private static final Checker PROPERTIES_OF = new RegexChecker(
+            "properties of \\d",
+            "The first line of number''s properties should contains \"Properties of {0}\"."
+    );
+    private static final Checker PROFILE_LINES = new LinesChecker(NumberProperties.values().length + 1);
 
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 
     @DynamicTest(data = "notNaturalNumbers", order = 10)
     CheckResult notNaturalNumbersTest(final long number) {
-        return checker.start()
-                .check(Key.ENTER_NUMBER)
+        return new UserProgram()
+                .start()
+                .check(ASK_FOR_NUMBER)
                 .execute(number)
-                .check(Key.NOT_NATURAL)
-                .finish()
-                .correct();
+                .check(ERROR_MESSAGE)
+                .finished()
+                .result();
+    }
+
+    private long[] getNumbers() {
+        return LongStream.concat(
+                LongStream.range(1, FIRST_NUMBERS),
+                random.longs(RANDOM_TESTS, 1, Short.MAX_VALUE)
+        ).toArray();
+    }
+
+    @DynamicTest(data = "getNumbers", order = 20)
+    CheckResult naturalNumbersTest(long number) {
+        return new UserProgram()
+                .start()
+                .check(ASK_FOR_NUMBER)
+                .execute(number)
+                .check(PROPERTIES_OF)
+                .check(PROFILE_LINES)
+                .check(new PropertiesChecker(number))
+                .finished()
+                .result();
     }
 
 }

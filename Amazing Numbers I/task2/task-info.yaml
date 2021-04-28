@@ -23,4 +23,4 @@ files:
 - name: test/util/FinishChecker.java
   visible: false
 - name: test/NumbersTest.java
-  visible: true
+  visible: false
