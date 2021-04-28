@@ -12,11 +12,7 @@ public class RegexChecker extends AbstractChecker {
     public RegexChecker(final String regexp, final int flags, final String feedback) {
         super(feedback);
         this.expected = Pattern.compile(regexp, flags);
-    }
-
-    @Override
-    public boolean test(UserProgram actual) {
-        return expected.matcher(actual.getOutput()).find();
+        validator = program -> expected.matcher(program.getOutput()).find();
     }
 
 }

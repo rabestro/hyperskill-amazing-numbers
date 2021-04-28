@@ -8,10 +8,7 @@ public class FinishChecker extends AbstractChecker {
 
     protected FinishChecker(String feedback) {
         super(feedback);
+        validator = program -> program.getTestedProgram().isFinished();
     }
 
-    @Override
-    public boolean test(UserProgram program) {
-        return program.getTestedProgram().isFinished();
-    }
 }

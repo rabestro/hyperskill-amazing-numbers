@@ -14,16 +14,16 @@ public final class NumbersTest extends StageTest {
 
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
 
-    private static final Function<UserProgram, UserProgram> HELP = new TextChecker(
-            "Supported requests")
-            .andThen(new RegexChecker(
-                    "natural number .* properties",
-                    "Display the instruction on how to use the program")
-            )
-            .andThen(new RegexChecker(
-                    "0 for( the)? exit",
-                    "Display the instruction on how to exit")
-            );
+    private static final Function<UserProgram, UserProgram> HELP =
+            new TextChecker("Supported requests")
+                    .andThen(new RegexChecker(
+                            "natural number .* properties",
+                            "Display the instruction on how to use the program")
+                    )
+                    .andThen(new RegexChecker(
+                            "0 for( the)? exit",
+                            "Display the instruction on how to exit")
+                    );
     private static final Checker ASK_FOR_NUMBER = new RegexChecker(
             "enter( a)? natural number",
             "The program should ask the user to enter a natural number."
@@ -46,6 +46,8 @@ public final class NumbersTest extends StageTest {
     CheckResult notNaturalNumbersTest(final long number) {
         return new UserProgram()
                 .start()
+                .check(WELCOME)
+                .check(HELP)
                 .check(ASK_FOR_NUMBER)
                 .execute(number)
                 .check(ERROR_MESSAGE)

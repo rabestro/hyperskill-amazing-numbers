@@ -3,6 +3,8 @@ package util;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
+import java.util.function.Function;
+
 public final class UserProgram {
     private TestedProgram program;
     private CheckResult result = CheckResult.correct();
@@ -21,7 +23,7 @@ public final class UserProgram {
         this.result = result;
     }
 
-    public UserProgram check(final Checker checker) {
+    public UserProgram check(final Function<UserProgram, UserProgram> checker) {
         return checker.apply(this);
     }
 

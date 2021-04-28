@@ -6,9 +6,9 @@ public class PropertiesChecker extends AbstractChecker {
 
     public PropertiesChecker(long number) {
         this.number = number;
+        validator = this::test;
     }
 
-    @Override
     public boolean test(UserProgram program) {
         for (var property : NumberProperties.values()) {
             final var name = property.name().toLowerCase();

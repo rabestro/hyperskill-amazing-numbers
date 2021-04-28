@@ -4,10 +4,12 @@ import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.testcase.CheckResult;
 
 import java.text.MessageFormat;
+import java.util.function.Predicate;
 
 import static java.util.Objects.isNull;
 
 public abstract class AbstractChecker implements Checker {
+    protected Predicate<UserProgram> validator;
     protected String feedback;
     protected Object[] parameters;
 
@@ -21,7 +23,7 @@ public abstract class AbstractChecker implements Checker {
 
     @Override
     public UserProgram apply(UserProgram program) {
-        if (this.test(program)) {
+        if (validator.test(program)) {
             return program;
         }
         program.setResult(CheckResult.wrong(MessageFormat.format(feedback,
@@ -37,6 +39,7 @@ public abstract class AbstractChecker implements Checker {
         this.feedback = feedback;
         return this;
     }
+
     public WrongAnswer getFeedback(Object... args) {
         return new WrongAnswer(MessageFormat.format(feedback, args));
     }

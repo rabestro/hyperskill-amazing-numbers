@@ -7,10 +7,7 @@ public class RunnerChecker extends AbstractChecker {
 
     public RunnerChecker(String feedback) {
         super(feedback);
+        validator = userProgram -> !userProgram.getTestedProgram().isFinished();
     }
 
-    @Override
-    public boolean test(UserProgram userProgram) {
-        return !userProgram.getTestedProgram().isFinished();
-    }
 }
