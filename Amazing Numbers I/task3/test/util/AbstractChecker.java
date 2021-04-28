@@ -5,6 +5,7 @@ import org.hyperskill.hstest.testcase.CheckResult;
 
 import java.text.MessageFormat;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 import static java.util.Objects.isNull;
 
@@ -32,12 +33,6 @@ public abstract class AbstractChecker implements Checker {
         throw isNull(parameters)
                 ? getFeedback(program.getInput(), program.getOutput())
                 : getFeedback(parameters);
-    }
-
-    @Override
-    public Checker setFeedback(String feedback) {
-        this.feedback = feedback;
-        return this;
     }
 
     public WrongAnswer getFeedback(Object... args) {

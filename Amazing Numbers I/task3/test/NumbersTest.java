@@ -5,6 +5,7 @@ import util.*;
 
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.LongStream;
 
 public final class NumbersTest extends StageTest {
@@ -38,7 +39,9 @@ public final class NumbersTest extends StageTest {
     );
     private static final Checker PROFILE_LINES = new LinesChecker(NumberProperties.values().length + 1);
 
-    private static final Checker RUNNING = new RunnerChecker();
+    private static final Checker RUNNING = new RunnerChecker(
+            "The program should continue to work after displaying an error message"
+    );
 
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 
@@ -51,8 +54,7 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_FOR_NUMBER)
                 .execute(number)
                 .check(ERROR_MESSAGE)
-                .check(RUNNING.setFeedback(
-                        "The program should continue to work after displaying an error message"))
+                .check(RUNNING)
                 .result();
     }
 
