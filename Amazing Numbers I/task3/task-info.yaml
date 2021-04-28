@@ -24,3 +24,5 @@ files:
   visible: true
 - name: test/util/UserProgram.java
   visible: true
+- name: test/util/RunnerChecker.java
+  visible: false

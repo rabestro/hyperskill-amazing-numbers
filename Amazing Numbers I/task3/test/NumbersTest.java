@@ -4,6 +4,7 @@ import org.hyperskill.hstest.testcase.CheckResult;
 import util.*;
 
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.LongStream;
 
 public final class NumbersTest extends StageTest {
@@ -12,12 +13,17 @@ public final class NumbersTest extends StageTest {
     private static final long FIRST_NUMBERS = 15;
 
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
-    private static final Checker HELP = (Checker) new TextChecker("Supported requests")
-            .andThen(new RegexChecker("natural number .* properties",
-                    "Display the instruction on how to use the program"))
-            .andThen(new RegexChecker("0 for( the)? exit",
-                    "Display the instruction on how to exit"));
 
+    private static final Function<UserProgram, UserProgram> HELP = new TextChecker(
+            "Supported requests")
+            .andThen(new RegexChecker(
+                    "natural number .* properties",
+                    "Display the instruction on how to use the program")
+            )
+            .andThen(new RegexChecker(
+                    "0 for( the)? exit",
+                    "Display the instruction on how to exit")
+            );
     private static final Checker ASK_FOR_NUMBER = new RegexChecker(
             "enter( a)? natural number",
             "The program should ask the user to enter a natural number."
@@ -32,6 +38,8 @@ public final class NumbersTest extends StageTest {
     );
     private static final Checker PROFILE_LINES = new LinesChecker(NumberProperties.values().length + 1);
 
+    private static final Checker RUNNING = new RunnerChecker();
+
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 
     @DynamicTest(data = "notNaturalNumbers", order = 10)
@@ -41,7 +49,8 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_FOR_NUMBER)
                 .execute(number)
                 .check(ERROR_MESSAGE)
-                .finished()
+                .check(RUNNING.setFeedback(
+                        "The program should continue to work after displaying an error message"))
                 .result();
     }
 

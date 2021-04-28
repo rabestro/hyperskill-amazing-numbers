@@ -32,6 +32,11 @@ public abstract class AbstractChecker implements Checker {
                 : getFeedback(parameters);
     }
 
+    @Override
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+    }
+
     public WrongAnswer getFeedback(Object... args) {
         return new WrongAnswer(MessageFormat.format(feedback, args));
     }
