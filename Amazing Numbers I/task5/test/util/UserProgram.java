@@ -5,7 +5,7 @@ import org.hyperskill.hstest.testing.TestedProgram;
 
 import java.util.function.Function;
 
-public final class UserProgram {
+public class UserProgram {
     private TestedProgram program;
     private CheckResult result = CheckResult.correct();
 
