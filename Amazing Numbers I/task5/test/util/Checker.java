@@ -1,7 +1,6 @@
 package util;
 
 import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
-import org.hyperskill.hstest.testcase.CheckResult;
 
 import java.text.MessageFormat;
 import java.util.function.Predicate;
@@ -32,8 +31,11 @@ public class Checker implements UnaryOperator<UserProgram> {
         if (validator.test(program)) {
             return program;
         }
-        program.setResult(CheckResult.wrong(MessageFormat.format(feedback,
-                isNull(parameters) ? new Object[]{program.getInput(), program.getOutput()} : parameters)));
+
+//        program.setResult(CheckResult.wrong(
+//                MessageFormat.format(feedback, Optional.ofNullable(parameters)
+//                        .orElse(new Object[]{program.getInput(), program.getOutput()})))
+//        );
 
         throw isNull(parameters)
                 ? getFeedback(program.getInput(), program.getOutput())

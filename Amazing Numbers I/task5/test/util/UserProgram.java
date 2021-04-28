@@ -45,10 +45,6 @@ public final class UserProgram {
         return input;
     }
 
-    public TestedProgram getTestedProgram() {
-        return program;
-    }
-
     public boolean isFinished() {
         return program.isFinished();
     }
