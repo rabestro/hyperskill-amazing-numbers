@@ -19,10 +19,6 @@ public final class UserProgram {
         return this;
     }
 
-    public void setResult(CheckResult result) {
-        this.result = result;
-    }
-
     public UserProgram check(final Function<UserProgram, UserProgram> checker) {
         return checker.apply(this);
     }
