@@ -10,11 +10,10 @@ import java.util.stream.LongStream;
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
     private static final int NEGATIVE_NUMBERS_TESTS = 5;
-    private static final long FIRST_NUMBERS = 15;
+    private static final int FIRST_NUMBERS = 15;
     private static final int RANDOM_TESTS = 10;
     private static final int MAX_COUNT = 20;
     private static final int MIN_START = 2;
-
 
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
 
@@ -37,19 +36,21 @@ public final class NumbersTest extends StageTest {
             "enter( a)? request",
             "The program should ask the user to enter a request."
     );
-    private static final Checker ERROR_MESSAGE = new RegexChecker(
-            "number is( not|n't) natural",
+    private static final Checker ERROR_FIRST = new RegexChecker(
+            "number is( not|n't) (natural|positive)",
+            "Number {0} is not natural. The program should print an error message."
+    );
+    private static final Checker ERROR_SECOND = new RegexChecker(
+            "number is( not|n't) natural|count should be( a)? (natural|positive) number.",
             "Number {0} is not natural. The program should print an error message."
     );
     private static final Checker PROPERTIES_OF = new RegexChecker(
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
     );
-
     private static final Checker RUNNING = new RunnerChecker(
             "The program should continue to work till the user enter \"0\"."
     );
-
     private static final Checker FINISHED = new FinishChecker(
             "The program should finish after the user enter \"0\"."
     );
@@ -58,7 +59,8 @@ public final class NumbersTest extends StageTest {
 
     @DynamicTest(order = 5)
     CheckResult welcomeTest() {
-        return program.start()
+        return program
+                .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(RUNNING)
@@ -70,13 +72,14 @@ public final class NumbersTest extends StageTest {
 
     @DynamicTest(repeat = NEGATIVE_NUMBERS_TESTS, order = 10)
     CheckResult notNaturalNumbersTest() {
+        long negativeNumber = -random.nextInt(Byte.MAX_VALUE) - 1L;
         return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(ASK_REQUEST)
-                .execute(-random.nextInt() - 1L)
-                .check(ERROR_MESSAGE)
+                .execute(negativeNumber)
+                .check(ERROR_FIRST)
                 .check(HELP)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
@@ -87,15 +90,15 @@ public final class NumbersTest extends StageTest {
 
     @DynamicTest(repeat = RANDOM_TESTS, order = 10)
     CheckResult notNaturalSecondNumberTest() {
-        int first = 1 + random.nextInt();
-        int second = -random.nextInt();
+        int first = 1 + random.nextInt(Short.MAX_VALUE);
+        int negativeSecond = -random.nextInt(Short.MAX_VALUE);
         return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(ASK_REQUEST)
-                .execute(first + " " + second)
-                .check(ERROR_MESSAGE)
+                .execute(first + " " + negativeSecond)
+                .check(ERROR_SECOND)
                 .check(HELP)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
@@ -129,7 +132,7 @@ public final class NumbersTest extends StageTest {
     }
 
     @DynamicTest(order = 40)
-    CheckResult twoNumbersTest() {
+    CheckResult firstNumbersListTest() {
         return program
                 .start()
                 .check(WELCOME)
