@@ -62,11 +62,6 @@ public enum NumberProperties implements LongPredicate {
         return Arrays.stream(NumberProperties.values());
     }
 
-    @Override
-    public String toString() {
-        return String.format(FORMAT, name().toLowerCase(), calculateProperty.test(number));
-    }
-
     public boolean hasProperty() {
         return calculateProperty.test(number);
     }

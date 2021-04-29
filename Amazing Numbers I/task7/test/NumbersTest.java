@@ -9,11 +9,14 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static java.util.stream.IntStream.range;
 
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
+    private static final Pattern SPACE = Pattern.compile(" ", Pattern.LITERAL);
+
     private static final int NEGATIVE_NUMBERS_TESTS = 5;
     private static final int FIRST_NUMBERS = 15;
     private static final int RANDOM_TESTS = 10;
@@ -93,6 +96,16 @@ public final class NumbersTest extends StageTest {
 
 
     // Stage #3
+    private final Object[][] searchTwoProperties = new Object[][]{
+            {1, 12, "even spy"},
+            {1, 15, "odd buzz"},
+            {1, 11, "buzz gapful"},
+            {1, 9, "spy buzz"},
+            {1012, 5, "spy even"},
+            {1533, 9, "palindromic odd"},
+            {52342, 6, "gapful duck"},
+            {1432, 12, "duck odd"}
+    };
 
     @DynamicTest(order = 5)
     CheckResult welcomeTest() {
@@ -144,6 +157,8 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
+    // Stage #4
+
     @DynamicTest(order = 20)
     CheckResult naturalNumbersTest() {
         final var numbers = LongStream.concat(
@@ -168,8 +183,6 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    // Stage #4
-
     @DynamicTest(order = 40)
     CheckResult firstNumbersListTest() {
         return program
@@ -192,6 +205,8 @@ public final class NumbersTest extends StageTest {
                 .toArray(Long[][]::new);
     }
 
+    // Stage #5
+
     @DynamicTest(data = "getRandomTwo", order = 44)
     CheckResult twoRandomNumbersTest(long start, long count) {
         return program
@@ -207,8 +222,6 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
-
-    // Stage #5
 
     @DynamicTest(data = "wrongProperty", order = 50)
     CheckResult wrongPropertyRequestTest(String wrongProperty) {
@@ -250,6 +263,8 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
+    // Stage #6
+
     @DynamicTest(repeat = RANDOM_TESTS, order = 55)
     CheckResult twoRandomNumbersAndPropertyTest() {
         final var start = 1L + random.nextInt(Short.MAX_VALUE);
@@ -273,8 +288,6 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    // Stage #6
-
     @DynamicTest(data = "wrongSecondProperty", order = 60)
     CheckResult wrongSecondPropertyRequestTest(String wrongSecondProperty) {
         return program
@@ -292,17 +305,6 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
-
-    private final Object[][] searchTwoProperties = new Object[][]{
-            {1, 12, "even spy"},
-            {1, 15, "odd buzz"},
-            {1, 11, "buzz gapful"},
-            {1, 9, "spy buzz"},
-            {1012, 5, "spy even"},
-            {1533, 9, "palindromic odd"},
-            {52342, 6, "gapful duck"},
-            {1432, 12, "duck odd"}
-    };
 
     @DynamicTest(data = "searchTwoProperties", order = 65)
     CheckResult twoNumbersAndTwoPropertyTest(int start, int count, String properties) {
@@ -362,4 +364,36 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
+
+    private Object[][] getRandomRequests() {
+        return Stream.of(
+                "1 7 odd spy palindromic harshad",
+                "1 10 even palindromic duck buzz",
+                "1 9 even palindromic duck buzz gapful",
+                "1 10 even harshad duck buzz gapful",
+                "100000 2 even harshad spy buzz gapful",
+                "100 4 odd spy gapful",
+                "2000 4 even palindromic duck")
+                .map($ -> SPACE.split($, 3))
+                .map($ -> new Object[]{Integer.parseInt($[0]), Integer.parseInt($[1]), $[2]})
+                .toArray(Object[][]::new);
+    }
+
+    @DynamicTest(data = "getRandomRequests", order = 65)
+    CheckResult manyPropertiesTest(int start, int count, String properties) {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(start + " " + count + " " + properties)
+                .check(new LinesChecker(count + 1))
+                .check(new ListChecker(start, count, properties))
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
+
 }
