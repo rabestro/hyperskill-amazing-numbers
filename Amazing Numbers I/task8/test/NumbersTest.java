@@ -250,7 +250,7 @@ public final class NumbersTest extends StageTest {
 
     @DynamicTest(data = "getProperties", order = 53)
     CheckResult allPropertiesSearchTest(String property) {
-        final var start = 1L + random.nextInt(Short.MAX_VALUE);
+        final var start = 1L + random.nextInt(Byte.MAX_VALUE);
         final var count = 1L + random.nextInt(MAX_COUNT);
         return program
                 .start()
