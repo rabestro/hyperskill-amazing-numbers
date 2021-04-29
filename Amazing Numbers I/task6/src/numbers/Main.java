@@ -1,21 +1,27 @@
 package numbers;
 
-import java.util.Arrays;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.function.LongPredicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 public class Main {
+    private static final Pattern SEPARATOR = Pattern.compile("[, ]+");
+
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         System.out.println("Welcome to Amazing Numbers!");
         printHelp();
 
-        run:
         while (true) {
             System.out.printf("%nEnter a request: ");
-            final var data = scanner.nextLine().split(" ");
+            final var data = SEPARATOR.split(scanner.nextLine().toUpperCase(), 3);
             System.out.println();
             if (data[0].isBlank()) {
                 printHelp();
@@ -31,7 +37,7 @@ public class Main {
                 continue;
             }
             if (data.length == 1) {
-                System.out.print(NumberProperties.fullProperties(start));
+                System.out.print(NumberProperty.fullProperties(start));
                 continue;
             }
             final var count = getNaturalNumber(data[1]);
@@ -41,31 +47,56 @@ public class Main {
                 continue;
             }
             if (data.length == 2) {
-                LongStream.range(start, start + count)
-                        .mapToObj(NumberProperties::shortProperties)
-                        .forEach(System.out::println);
+                printList(start, count, Collections.emptySet());
                 continue;
             }
 
-            LongPredicate condition = number -> true;
-            for (int i = 2; i < data.length; ++i) {
-                final var property = data[i].toUpperCase();
-                final var notFound = NumberProperties.stream().map(Enum::name).noneMatch(property::equals);
-                if (notFound) {
-                    System.out.printf("The property '%s' is incorrect.%n", property);
-                    System.out.println("Available properties: " + Arrays.toString(NumberProperties.values()));
-                    continue run;
-                }
-                condition = condition.and(NumberProperties.valueOf(property));
+            final var names = SEPARATOR
+                    .splitAsStream(data[2])
+                    .collect(Collectors.toUnmodifiableSet());
+
+            if (!NumberProperty.NAMES.containsAll(names)) {
+                final var unknown = new HashSet<>(names);
+                unknown.removeAll(NumberProperty.NAMES);
+                System.out.println(MessageFormat.format(
+                        "The {1,choice, 1#property|1<properties} {0} {1,choice, 1#is|1<are} unknown.",
+                        unknown, unknown.size())
+                );
+                System.out.println("Available properties: " + NumberProperty.NAMES);
+                continue;
             }
 
-            LongStream.iterate(start, n -> n + 1)
-                    .filter(condition)
-                    .limit(count)
-                    .mapToObj(NumberProperties::shortProperties)
-                    .forEach(System.out::println);
+            final var properties = names.stream()
+                    .map(NumberProperty::valueOf)
+                    .collect(Collectors.toUnmodifiableSet());
+
+            NumberProperty.MUTUALLY_EXCLUSIVE
+                    .stream()
+                    .filter(properties::containsAll)
+                    .findAny()
+                    .ifPresentOrElse(
+                            Main::mutuallyExclusiveError,
+                            () -> printList(start, count, properties)
+                    );
         }
         System.out.println("Goodbye!");
+    }
+
+    private static void printList(long start, long count, Set<NumberProperty> properties) {
+        final var condition = properties.stream()
+                .map(property -> (LongPredicate) property)
+                .reduce(number -> true, LongPredicate::and);
+
+        LongStream.iterate(start, n -> n + 1)
+                .filter(condition)
+                .limit(count)
+                .mapToObj(NumberProperty::shortProperties)
+                .forEach(System.out::println);
+    }
+
+    private static void mutuallyExclusiveError(Set<NumberProperty> exclusiveProperties) {
+        System.out.println("The request contains mutually exclusive properties: " + exclusiveProperties);
+        System.out.println("There are no numbers with all these properties at once.");
     }
 
     private static long getNaturalNumber(final String input) {

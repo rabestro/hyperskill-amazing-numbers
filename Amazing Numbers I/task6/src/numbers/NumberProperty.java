@@ -1,13 +1,15 @@
 package numbers;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.LongPredicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
 
-public enum NumberProperties implements LongPredicate {
+public enum NumberProperty implements LongPredicate {
     EVEN(x -> x % 2 == 0),
     ODD(x -> x % 2 != 0),
     BUZZ(x -> x % 7 == 0 || x % 10 == 7),
@@ -19,15 +21,21 @@ public enum NumberProperties implements LongPredicate {
     GAPFUL(x -> x > 100 && x % (getNumericValue(String.valueOf(x).charAt(0)) * 10L + x % 10) == 0),
     SPY(x -> digitsSum(x) == digitsProduct(x));
 
+    public static final Set<Set<NumberProperty>> MUTUALLY_EXCLUSIVE =
+            Set.of(Set.of(EVEN, ODD), Set.of(DUCK, SPY));
+
+    public static final Set<String> NAMES = Arrays.stream(values())
+            .map(Enum::name).collect(Collectors.toUnmodifiableSet());
+
     private final LongPredicate hasProperty;
 
-    NumberProperties(LongPredicate hasProperty) {
+    NumberProperty(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
     }
 
     public static String shortProperties(long x) {
         final var sj = new StringJoiner(", ", String.format("%,16d is ", x), "");
-        for (var property : NumberProperties.values()) {
+        for (var property : NumberProperty.values()) {
             if (property.test(x)) {
                 sj.add(property.name().toLowerCase());
             }
@@ -37,14 +45,14 @@ public enum NumberProperties implements LongPredicate {
 
     public static String fullProperties(long x) {
         final var sj = new StringJoiner("", String.format("Properties of %,d%n", x), "");
-        for (var property : NumberProperties.values()) {
+        for (var property : NumberProperty.values()) {
             sj.add(String.format("%12s: %b%n", property.name().toLowerCase(), property.test(x)));
         }
         return sj.toString();
     }
 
-    public static Stream<NumberProperties> stream() {
-        return Arrays.stream(NumberProperties.values());
+    public static Stream<NumberProperty> stream() {
+        return Arrays.stream(NumberProperty.values());
     }
 
     public static long digitsSum(long x) {

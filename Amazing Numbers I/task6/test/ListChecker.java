@@ -1,4 +1,4 @@
-import numbers.NumberProperties;
+import numbers.NumberProperty;
 import util.Checker;
 import util.UserProgram;
 
@@ -39,7 +39,7 @@ public class ListChecker extends Checker {
         final var condition = Arrays.stream(queries).map(query -> {
             final var isNegative = query.startsWith("-");
             final var name = isNegative ? query.substring(1) : query;
-            final var property = NumberProperties.valueOf(name.toUpperCase());
+            final var property = NumberProperty.valueOf(name.toUpperCase());
             return isNegative ? property.negate() : property;
         }).reduce(number -> true, LongPredicate::and);
 
@@ -82,7 +82,7 @@ public class ListChecker extends Checker {
                     .collect(Collectors.toUnmodifiableList());
 
             final var expectedProperties = Arrays
-                    .stream(NumberProperties.values())
+                    .stream(NumberProperty.values())
                     .filter(property -> property.test(expectedNumber))
                     .map(Enum::name)
                     .map(String::toLowerCase)
