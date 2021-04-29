@@ -84,7 +84,8 @@ public final class NumbersTest extends StageTest {
     );
 
     private final UserProgram program = new UserProgram();
-    private final String[] wrongRequests = new String[]{
+
+    private final String[] wrongProperty = new String[]{
             "1 10 gay", "40 2 bay", "37 4 8", "67 2 +y-", "2 54 Prime Number", "6 8 ...", "5 9 ,"
     };
     private final String[] wrongSecondProperty = new String[]{
@@ -209,14 +210,14 @@ public final class NumbersTest extends StageTest {
 
     // Stage #5
 
-    @DynamicTest(data = "wrongRequests", order = 50)
-    CheckResult wrongPropertyRequestTest(String wrongPropertyRequest) {
+    @DynamicTest(data = "wrongProperty", order = 50)
+    CheckResult wrongPropertyRequestTest(String wrongProperty) {
         return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(ASK_REQUEST)
-                .execute(wrongPropertyRequest)
+                .execute(wrongProperty)
                 .check(ERROR_PROPERTY)
                 .check(HELP_PROPERTIES)
                 .check(LIST_PROPERTIES)
