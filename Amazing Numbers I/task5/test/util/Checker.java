@@ -18,10 +18,10 @@ public class Checker implements UnaryOperator<UserProgram> {
     }
 
     protected Checker(String feedback) {
-        this(feedback, $ -> true);
+        this($ -> true, feedback);
     }
 
-    public Checker(String feedback, Predicate<UserProgram> validator) {
+    public Checker(Predicate<UserProgram> validator, String feedback) {
         this.feedback = feedback;
         this.validator = validator;
     }

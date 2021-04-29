@@ -62,27 +62,23 @@ public final class NumbersTest extends StageTest {
             "Available properties"
     );
     private static final Checker LIST_PROPERTIES = new Checker(
-            "If incorrect property specified then show the list of available properties.") {
-        {
-            validator = program -> Arrays.stream(NumberProperties.values())
+            program -> Arrays.stream(NumberProperties.values())
                     .map(Enum::name)
                     .map("(?i)\\b"::concat)
                     .map(Pattern::compile)
                     .map(p -> p.matcher(program.getOutput()))
-                    .allMatch(Matcher::find);
-        }
-    };
+                    .allMatch(Matcher::find),
+            "If incorrect property specified then show the list of available properties."
+    );
     private static final Checker PROPERTIES_OF = new RegexChecker(
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
     );
-    private static final Checker RUNNING = new Checker(
-            "The program should continue to work till the user enter \"0\".",
-            Predicate.not(UserProgram::isFinished)
+    private static final Checker RUNNING = new Checker(Predicate.not(UserProgram::isFinished),
+            "The program should continue to work till the user enter \"0\"."
     );
-    private static final Checker FINISHED = new Checker(
-            "The program should finish after the user enter \"0\".",
-            UserProgram::isFinished
+    private static final Checker FINISHED = new Checker(UserProgram::isFinished,
+            "The program should finish after the user enter \"0\"."
     );
 
     private final UserProgram program = new UserProgram();
