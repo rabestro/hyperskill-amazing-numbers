@@ -26,21 +26,19 @@ public final class NumbersTest extends StageTest {
             new TextChecker("Supported requests")
                     .andThen(new RegexChecker(
                             "(one|a) natural number .* properties",
-                            "Display the instruction on how to use the program")
-                    )
+                            "Display the instruction on how to use the program"))
                     .andThen(new TextChecker(
                             "two natural numbers",
                             "In this stage the user may enter two numbers to print a list. "
-                                    + "The program should explain this in the help."
-                    ))
+                                    + "The program should explain this in the help."))
                     .andThen(new TextChecker(
                             "property to search for",
                             "In this stage the user may enter two numbers and property to search for. "
                                     + "The program should explain this in the help."))
                     .andThen(new RegexChecker(
                             "0 for( the)? exit",
-                            "Display the instruction on how to exit")
-                    );
+                            "Display the instruction on how to exit"));
+
     private static final Checker ASK_REQUEST = new RegexChecker(
             "enter( a)? request",
             "The program should ask the user to enter a request."
