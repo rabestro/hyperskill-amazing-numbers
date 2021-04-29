@@ -5,7 +5,7 @@ import java.util.stream.LongStream;
 
 import static java.lang.Character.getNumericValue;
 
-public enum NumberProperties implements LongPredicate {
+public enum Properties implements LongPredicate {
     EVEN(x -> x % 2 == 0),
     ODD(x -> x % 2 != 0),
     BUZZ(x -> x % 7 == 0 || x % 10 == 7),
@@ -24,7 +24,7 @@ public enum NumberProperties implements LongPredicate {
             Pattern.CASE_INSENSITIVE
     );
 
-    NumberProperties(LongPredicate hasProperty) {
+    Properties(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
     }
 
