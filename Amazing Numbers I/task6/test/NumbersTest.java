@@ -274,7 +274,7 @@ public final class NumbersTest extends StageTest {
 
     // Stage #6
 
-    @DynamicTest(data = "wrongSecondProperty", order = 50)
+    @DynamicTest(data = "wrongSecondProperty", order = 60)
     CheckResult wrongSecondPropertyRequestTest(String wrongSecondProperty) {
         return program
                 .start()
