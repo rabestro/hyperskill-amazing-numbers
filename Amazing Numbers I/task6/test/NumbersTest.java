@@ -125,7 +125,7 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    @DynamicTest(repeat = RANDOM_TESTS, order = 10)
+    @DynamicTest(repeat = RANDOM_TESTS, order = 15)
     CheckResult notNaturalSecondNumberTest() {
         int first = 1 + random.nextInt(Short.MAX_VALUE);
         int negativeSecond = -random.nextInt(Short.MAX_VALUE);
