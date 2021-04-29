@@ -250,8 +250,8 @@ public final class NumbersTest extends StageTest {
 
     @DynamicTest(data = "getProperties", order = 53)
     CheckResult allPropertiesSearchTest(String property) {
-        final var start = 1L + random.nextInt(Byte.MAX_VALUE);
-        final var count = 1L + random.nextInt(MAX_COUNT);
+        final var start = 1 + random.nextInt(Byte.MAX_VALUE);
+        final var count = 1 + random.nextInt(MAX_COUNT);
         return program
                 .start()
                 .check(WELCOME)
@@ -270,8 +270,8 @@ public final class NumbersTest extends StageTest {
 
     @DynamicTest(repeat = RANDOM_TESTS, order = 55)
     CheckResult twoRandomNumbersAndPropertyTest() {
-        final var start = 1L + random.nextInt(Short.MAX_VALUE);
-        final var count = 1L + random.nextInt(MAX_COUNT);
+        final var start = 1 + random.nextInt(Short.MAX_VALUE);
+        final var count = 1 + random.nextInt(MAX_COUNT);
         final var index = random.nextInt(Properties.values().length);
         final var property = Properties.values()[index].name();
         final var request = start + " " + count + " " + property;
