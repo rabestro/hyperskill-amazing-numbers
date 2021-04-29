@@ -40,6 +40,10 @@ public final class NumbersTest extends StageTest {
                             "In this stage the user may enter two numbers and properties to search for. "
                                     + "The program should explain this in the help."))
                     .andThen(new RegexChecker(
+                            "property.*preceded by( a)? minus",
+                            "In this stage the user may puts a minus in front of the property. "
+                                    + "The program should explain this in the help."))
+                    .andThen(new RegexChecker(
                             "0 for( the)? exit",
                             "Display the instruction on how to exit"));
 
@@ -93,7 +97,6 @@ public final class NumbersTest extends StageTest {
     private final String[] wrongSecondProperties = new String[]{
             "1 10 odd girl", "40 2 even day", "37 4 spy 89", "67 2 DUCK +"
     };
-
 
     // Stage #3
     private final Object[][] searchTwoProperties = new Object[][]{
@@ -395,5 +398,8 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
+
+    // Stage #8 Jumping numbers & minus in front of the property
+
 
 }

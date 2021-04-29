@@ -3,10 +3,10 @@ package numbers;
 import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.function.LongPredicate;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
-import static java.util.stream.Collectors.joining;
 
 public enum NumberProperties implements LongPredicate {
     EVEN(number -> number % 2 == 0),
@@ -20,16 +20,24 @@ public enum NumberProperties implements LongPredicate {
     GAPFUL(number -> number > 100 &&
             number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
     SPY(x -> digitsSum(x) == digitsProduct(x)),
-    HARSHAD(x -> x % digitsSum(x) == 0);
-/*    ARMSTRONG(x -> {
-        final var number = String.valueOf(x);
-        final var power = number.length();
-        final var sum = number.chars()
-                .map(Character::getNumericValue)
-                .mapToLong(digit -> pow(digit, power))
-                .sum();
-        return x == sum;
-    });*/
+    HARSHAD(x -> x % digitsSum(x) == 0),
+//    DISARIUM(x -> {
+//        final var number = String.valueOf(x);
+//        return LongStream.range(0, number.length())
+//                .map(i -> pow(Character.getNumericValue(number.charAt((int) i)), i + 1))
+//                .sum() == x;
+//    }),
+    JUMPING(n -> {
+        for (long p = n % 10, r = n / 10; r > 0; r /= 10) {
+            long c = r % 10;
+            long d = p - c;
+            if (d != 1 && d != -1) {
+                return false;
+            }
+            p = c;
+        }
+        return true;
+    });
 
     private final LongPredicate calculateProperty;
 
