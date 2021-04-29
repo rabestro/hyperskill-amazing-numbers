@@ -293,4 +293,31 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
+    private final Object[][] searchTwoProperties = new Object[][]{
+            {1, 12, "even spy"},
+            {1, 15, "odd buzz"},
+            {1, 11, "buzz gapful"},
+            {1, 9, "spy buzz"},
+            {1012, 5, "spy even"},
+            {1533, 9, "palindromic odd"},
+            {52342, 6, "gapful duck"},
+            {1432, 12, "duck odd"}
+    };
+
+    @DynamicTest(data = "searchTwoProperties", order = 60)
+    CheckResult twoNumbersAndTwoPropertyTest(int start, int count, String properties) {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(start + " " + count + " " + properties)
+                .check(new LinesChecker(count + 1))
+                .check(new ListChecker(start, count, properties))
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
 }

@@ -78,6 +78,7 @@ public class Main {
         System.out.println("  - a starting number for the list;");
         System.out.println("  - a count of numbers in the list;");
         System.out.println("- two natural numbers and property to search for;");
+        System.out.println("- two natural numbers and two properties to search for;");
         System.out.println("- 0 for the exit. ");
     }
 }
