@@ -8,19 +8,15 @@ files:
   visible: false
 - name: test/util/UserProgram.java
   visible: false
-- name: test/util/AbstractChecker.java
-  visible: false
 - name: test/util/Checker.java
   visible: false
 - name: test/util/RegexChecker.java
   visible: false
 - name: test/util/LinesChecker.java
   visible: false
-- name: test/util/FinishChecker.java
-  visible: false
 - name: test/ListChecker.java
   visible: false
-- name: test/NumberProperties.java
+- name: test/Properties.java
   visible: false
-- name: test/CardChecker.java
+- name: test/PropertiesChecker.java
   visible: false

@@ -28,7 +28,7 @@ public final class NumbersTest extends StageTest {
                             "(one|a) natural number .* properties",
                             "Display the instruction on how to use the program")
                     )
-                    .andThen(new RegexChecker(
+                    .andThen(new TextChecker(
                             "two natural numbers",
                             "In this stage the user may enter two numbers to print a list. "
                                     + "The program should explain this in the help."
@@ -137,7 +137,7 @@ public final class NumbersTest extends StageTest {
     }
 
     @DynamicTest(data = "wrongRequests", order = 15)
-    CheckResult notNaturalSecondNumberTest(String wrongPropertyRequest) {
+    CheckResult wrongPropertyRequestTest(String wrongPropertyRequest) {
         return program
                 .start()
                 .check(WELCOME)
