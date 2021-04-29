@@ -59,7 +59,7 @@ public class Main {
                 final var unknown = new HashSet<>(names);
                 unknown.removeAll(NumberProperty.NAMES);
                 System.out.println(MessageFormat.format(
-                        "The {1,choice, 1#property|1<properties} {0} {1,choice, 1#is|1<are} unknown.",
+                        "The {1,choice,1#property|1<properties} {0} {1,choice,1#is|1<are} unknown.",
                         unknown, unknown.size())
                 );
                 System.out.println("Available properties: " + NumberProperty.NAMES);
