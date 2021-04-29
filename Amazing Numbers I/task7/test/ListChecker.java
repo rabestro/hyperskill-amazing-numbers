@@ -1,5 +1,5 @@
 import numbers.NumberProperties;
-import util.AbstractChecker;
+import util.Checker;
 import util.UserProgram;
 
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-public class ListChecker extends AbstractChecker {
+public class ListChecker extends Checker {
     private static final Pattern LINE_PATTERN = Pattern.compile(
             "(?<number>[\\d,. ]*\\d)\\s*(is|:|-)\\s*(?<properties>.+)",
             Pattern.CASE_INSENSITIVE);
@@ -30,12 +30,12 @@ public class ListChecker extends AbstractChecker {
 
     public ListChecker(long start, long count, String[] queries) {
         super("The list is incorrect");
+        this.validator = this::test;
         this.expectedList = getList(start, count, queries);
         this.expectedCount = count;
     }
 
     private static long[] getList(long start, long count, String[] queries) {
-
         final var condition = Arrays.stream(queries).map(query -> {
             final var isNegative = query.startsWith("-");
             final var name = isNegative ? query.substring(1) : query;
@@ -47,7 +47,6 @@ public class ListChecker extends AbstractChecker {
                 .filter(condition).limit(count).toArray();
     }
 
-    @Override
     public boolean test(UserProgram program) {
         final var lines = program.getOutput()
                 .lines()

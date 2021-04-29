@@ -4,11 +4,3 @@ files:
   visible: true
 - name: src/numbers/NumberProperties.java
   visible: true
-- name: test/ListChecker.java
-  visible: false
-- name: test/NumberProperties.java
-  visible: false
-- name: test/NumbersTest.java
-  visible: false
-- name: test/CardChecker.java
-  visible: false

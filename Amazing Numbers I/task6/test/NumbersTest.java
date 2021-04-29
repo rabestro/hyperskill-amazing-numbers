@@ -1,4 +1,3 @@
-import numbers.NumberProperties;
 import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
@@ -64,7 +63,7 @@ public final class NumbersTest extends StageTest {
             "Available properties"
     );
     private static final Checker LIST_PROPERTIES = new Checker(
-            program -> Arrays.stream(NumberProperties.values())
+            program -> Arrays.stream(Properties.values())
                     .map(Enum::name)
                     .map("(?i)\\b"::concat)
                     .map(Pattern::compile)
@@ -229,7 +228,7 @@ public final class NumbersTest extends StageTest {
     }
 
     private String[] getProperties() {
-        return Arrays.stream(NumberProperties.values()).map(Enum::name).toArray(String[]::new);
+        return Arrays.stream(Properties.values()).map(Enum::name).toArray(String[]::new);
     }
 
     @DynamicTest(data = "getProperties", order = 53)
@@ -254,8 +253,8 @@ public final class NumbersTest extends StageTest {
     CheckResult twoRandomNumbersAndPropertyTest() {
         final var start = 1L + random.nextInt(Short.MAX_VALUE);
         final var count = 1L + random.nextInt(MAX_COUNT);
-        final var index = random.nextInt(NumberProperties.values().length);
-        final var property = NumberProperties.values()[index].name();
+        final var index = random.nextInt(Properties.values().length);
+        final var property = Properties.values()[index].name();
         final var request = start + " " + count + " " + property;
 
         return program
