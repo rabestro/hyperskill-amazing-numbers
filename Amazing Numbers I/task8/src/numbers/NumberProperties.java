@@ -1,22 +1,27 @@
 package numbers;
 
 import java.util.Arrays;
+import java.util.StringJoiner;
 import java.util.function.LongPredicate;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
 import static java.util.stream.Collectors.joining;
 
 public enum NumberProperties implements LongPredicate {
-    EVEN(x -> x % 2 == 0),
-    ODD(x -> x % 2 != 0),
-    BUZZ(x -> x % 7 == 0 || x % 10 == 7),
-    DUCK(x -> String.valueOf(x).indexOf('0') != -1),
-    GAPFUL(x -> x > 100 && x % (getNumericValue(String.valueOf(x).charAt(0)) * 10L + x % 10) == 0),
-    HARSHAD(x -> x % digitsSum(x) == 0),
+    EVEN(number -> number % 2 == 0),
+    ODD(number -> number % 2 != 0),
+    BUZZ(number -> number % 7 == 0 || number % 10 == 7),
+    DUCK(number -> String.valueOf(number).indexOf('0') != -1),
+    PALINDROMIC(number -> {
+        final var digits = String.valueOf(number);
+        return new StringBuilder(digits).reverse().toString().equals(digits);
+    }),
+    GAPFUL(number -> number > 100 &&
+            number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
     SPY(x -> digitsSum(x) == digitsProduct(x)),
-    ARMSTRONG(x -> {
+    HARSHAD(x -> x % digitsSum(x) == 0);
+/*    ARMSTRONG(x -> {
         final var number = String.valueOf(x);
         final var power = number.length();
         final var sum = number.chars()
@@ -24,16 +29,7 @@ public enum NumberProperties implements LongPredicate {
                 .mapToLong(digit -> pow(digit, power))
                 .sum();
         return x == sum;
-    }),
-    DISARIUM(x -> {
-        final var number = String.valueOf(x);
-        return LongStream.range(0, number.length())
-                .map(i -> pow(Character.getNumericValue(number.charAt((int) i)), i + 1))
-                .sum() == x;
-    });
-
-    public static String FORMAT = "%12s: %b%n";
-    public static long number = 0;
+    });*/
 
     private final LongPredicate calculateProperty;
 
@@ -42,33 +38,25 @@ public enum NumberProperties implements LongPredicate {
     }
 
     public static String shortProperties(long x) {
-        number = x;
-        return stream()
-                .filter(NumberProperties::hasProperty)
-                .map(NumberProperties::name)
-                .map(String::toLowerCase)
-                .collect(joining(", "));
+        final var sj = new StringJoiner(", ", String.format("%,16d is ", x), "");
+        for (var property : NumberProperties.values()) {
+            if (property.test(x)) {
+                sj.add(property.name().toLowerCase());
+            }
+        }
+        return sj.toString();
     }
 
     public static String fullProperties(long x) {
-        number = x;
-        final var prefix = String.format("Properties of %,d%n", number);
-        return stream()
-                .map(NumberProperties::toString)
-                .collect(joining("", prefix, ""));
+        final var sj = new StringJoiner("", String.format("Properties of %,d%n", x), "");
+        for (var property : NumberProperties.values()) {
+            sj.add(String.format("%12s: %b%n", property.name().toLowerCase(), property.test(x)));
+        }
+        return sj.toString();
     }
 
     public static Stream<NumberProperties> stream() {
         return Arrays.stream(NumberProperties.values());
-    }
-
-    @Override
-    public String toString() {
-        return String.format(FORMAT, name().toLowerCase(), calculateProperty.test(number));
-    }
-
-    public boolean hasProperty() {
-        return calculateProperty.test(number);
     }
 
     @Override
