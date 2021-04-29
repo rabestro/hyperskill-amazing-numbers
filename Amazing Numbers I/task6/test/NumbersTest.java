@@ -304,7 +304,7 @@ public final class NumbersTest extends StageTest {
             {1432, 12, "duck odd"}
     };
 
-    @DynamicTest(data = "searchTwoProperties", order = 60)
+    @DynamicTest(data = "searchTwoProperties", order = 65)
     CheckResult twoNumbersAndTwoPropertyTest(int start, int count, String properties) {
         return program
                 .start()

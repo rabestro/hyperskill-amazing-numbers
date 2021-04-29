@@ -2,6 +2,7 @@ package numbers;
 
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.function.LongPredicate;
 import java.util.stream.LongStream;
 
 public class Main {
@@ -11,6 +12,7 @@ public class Main {
         System.out.println("Welcome to Amazing Numbers!");
         printHelp();
 
+        run:
         while (true) {
             System.out.printf("%nEnter a request: ");
             final var data = scanner.nextLine().split(" ");
@@ -45,20 +47,25 @@ public class Main {
                 continue;
             }
 
-            final var property = data[2].toUpperCase();
-            final var notFound = NumberProperties.stream().map(Enum::name).noneMatch(property::equals);
-            if (notFound) {
-                System.out.printf("The property '%s' is incorrect.%n", property);
-                System.out.println("Available properties: " + Arrays.toString(NumberProperties.values()));
-                continue;
+            LongPredicate condition = number -> true;
+            for (int i = 2; i < data.length; ++i) {
+                final var property = data[i].toUpperCase();
+                final var notFound = NumberProperties.stream().map(Enum::name).noneMatch(property::equals);
+                if (notFound) {
+                    System.out.printf("The property '%s' is incorrect.%n", property);
+                    System.out.println("Available properties: " + Arrays.toString(NumberProperties.values()));
+                    continue run;
+                }
+                condition = condition.and(NumberProperties.valueOf(property));
             }
-            final var condition = NumberProperties.valueOf(property);
+
             LongStream.iterate(start, n -> n + 1)
                     .filter(condition)
                     .limit(count)
                     .mapToObj(NumberProperties::shortProperties)
                     .forEach(System.out::println);
         }
+        System.out.println("Goodbye!");
     }
 
     private static long getNaturalNumber(final String input) {
