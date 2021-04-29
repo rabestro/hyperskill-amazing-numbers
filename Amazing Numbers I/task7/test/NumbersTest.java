@@ -328,7 +328,10 @@ public final class NumbersTest extends StageTest {
         final var count = 1 + random.nextInt(MAX_COUNT);
 
         final var properties = new ArrayList<String>();
-        final var incorrect = new String[]{"bAY", "Boy", "~~", "...", "242", "&hj", "simple"};
+        final var incorrect = new String[]{
+                "bAY", "Boy", "~~", "...", "242", "&hj", "simple", "evens",
+                "speck", "_odd_", "reverse", "gipful", "buzzz", "drake"
+        };
         properties.add(incorrect[random.nextInt(incorrect.length)]);
 
         final var correct = new ArrayList<>(List.of(Properties.values()));
