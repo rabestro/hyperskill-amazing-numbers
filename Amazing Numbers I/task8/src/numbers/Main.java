@@ -30,7 +30,7 @@ public class Main {
                 continue;
             }
             if (data.length == 1) {
-                System.out.print(NumberProperties.fullProperties(start));
+                System.out.print(NumberProperty.fullProperties(start));
                 continue;
             }
             final var count = getNaturalNumber(data[1]);
@@ -41,7 +41,7 @@ public class Main {
             }
             if (data.length == 2) {
                 LongStream.range(start, start + count)
-                        .mapToObj(NumberProperties::shortProperties)
+                        .mapToObj(NumberProperty::shortProperties)
                         .forEach(System.out::println);
                 continue;
             }
@@ -50,21 +50,21 @@ public class Main {
             for (int i = 2; i < data.length; ++i) {
                 final boolean isNegative = data[i].startsWith("-");
                 final var name = isNegative ? data[i].substring(1) : data[i];
-                final var notFound = NumberProperties.stream().map(Enum::name).noneMatch(name::equals);
+                final var notFound = NumberProperty.stream().map(Enum::name).noneMatch(name::equals);
 
                 if (notFound) {
                     System.out.printf("The property '%s' is incorrect.%n", name);
-                    System.out.println("Available properties: " + Arrays.toString(NumberProperties.values()));
+                    System.out.println("Available properties: " + Arrays.toString(NumberProperty.values()));
                     continue main;
                 }
-                final var property = NumberProperties.valueOf(name);
+                final var property = NumberProperty.valueOf(name);
                 condition = condition.and(isNegative ? property.negate() : property);
             }
 
             LongStream.iterate(start, n -> n + 1)
                     .filter(condition)
                     .limit(count)
-                    .mapToObj(NumberProperties::shortProperties)
+                    .mapToObj(NumberProperty::shortProperties)
                     .forEach(System.out::println);
         }
         System.out.println("Goodbye!");

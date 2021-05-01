@@ -5,7 +5,7 @@ import java.util.stream.LongStream;
 
 import static java.lang.Character.getNumericValue;
 
-public enum Properties implements LongPredicate {
+public enum NumberProperty implements LongPredicate {
     EVEN(x -> x % 2 == 0),
     ODD(x -> x % 2 != 0),
     BUZZ(x -> x % 7 == 0 || x % 10 == 7),
@@ -35,20 +35,12 @@ public enum Properties implements LongPredicate {
             Pattern.CASE_INSENSITIVE
     );
 
-    Properties(LongPredicate hasProperty) {
+    NumberProperty(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
     }
 
     private static LongStream digits(long number) {
         return Long.toString(number).chars().mapToLong(Character::getNumericValue);
-    }
-
-    public static long pow(long n, long p) {
-        long result = 1;
-        for (long i = p; i > 0; --i) {
-            result *= n;
-        }
-        return result;
     }
 
     @Override

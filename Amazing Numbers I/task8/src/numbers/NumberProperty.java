@@ -3,12 +3,12 @@ package numbers;
 import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.function.LongPredicate;
-import java.util.stream.LongStream;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
 
-public enum NumberProperties implements LongPredicate {
+public enum NumberProperty implements LongPredicate {
     EVEN(number -> number % 2 == 0),
     ODD(number -> number % 2 != 0),
     BUZZ(number -> number % 7 == 0 || number % 10 == 7),
@@ -21,12 +21,6 @@ public enum NumberProperties implements LongPredicate {
             number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
     SPY(x -> digitsSum(x) == digitsProduct(x)),
     HARSHAD(x -> x % digitsSum(x) == 0),
-//    DISARIUM(x -> {
-//        final var number = String.valueOf(x);
-//        return LongStream.range(0, number.length())
-//                .map(i -> pow(Character.getNumericValue(number.charAt((int) i)), i + 1))
-//                .sum() == x;
-//    }),
     JUMPING(n -> {
         for (long p = n % 10, r = n / 10; r > 0; r /= 10) {
             long c = r % 10;
@@ -39,15 +33,19 @@ public enum NumberProperties implements LongPredicate {
         return true;
     });
 
-    private final LongPredicate calculateProperty;
+    private final LongPredicate hasProperty;
+    private final Pattern pattern = Pattern.compile(
+            name() + "\\s*[:-]\\s*(?<value>true|false)",
+            Pattern.CASE_INSENSITIVE
+    );
 
-    NumberProperties(LongPredicate calculateProperty) {
-        this.calculateProperty = calculateProperty;
+    NumberProperty(LongPredicate hasProperty) {
+        this.hasProperty = hasProperty;
     }
 
     public static String shortProperties(long x) {
         final var sj = new StringJoiner(", ", String.format("%,16d is ", x), "");
-        for (var property : NumberProperties.values()) {
+        for (var property : NumberProperty.values()) {
             if (property.test(x)) {
                 sj.add(property.name().toLowerCase());
             }
@@ -57,19 +55,19 @@ public enum NumberProperties implements LongPredicate {
 
     public static String fullProperties(long x) {
         final var sj = new StringJoiner("", String.format("Properties of %,d%n", x), "");
-        for (var property : NumberProperties.values()) {
+        for (var property : NumberProperty.values()) {
             sj.add(String.format("%12s: %b%n", property.name().toLowerCase(), property.test(x)));
         }
         return sj.toString();
     }
 
-    public static Stream<NumberProperties> stream() {
-        return Arrays.stream(NumberProperties.values());
+    public static Stream<NumberProperty> stream() {
+        return Arrays.stream(NumberProperty.values());
     }
 
     @Override
     public boolean test(long number) {
-        return calculateProperty.test(number);
+        return hasProperty.test(number);
     }
 
     public static long digitsSum(long x) {

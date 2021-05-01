@@ -68,7 +68,7 @@ public final class NumbersTest extends StageTest {
             "Available properties"
     );
     private static final Checker LIST_PROPERTIES = new Checker(
-            program -> Arrays.stream(Properties.values())
+            program -> Arrays.stream(NumberProperty.values())
                     .map(Enum::name)
                     .map("(?i)\\b"::concat)
                     .map(Pattern::compile)
@@ -245,7 +245,7 @@ public final class NumbersTest extends StageTest {
     }
 
     private String[] getProperties() {
-        return Arrays.stream(Properties.values()).map(Enum::name).toArray(String[]::new);
+        return Arrays.stream(NumberProperty.values()).map(Enum::name).toArray(String[]::new);
     }
 
     @DynamicTest(data = "getProperties", order = 53)
@@ -272,8 +272,8 @@ public final class NumbersTest extends StageTest {
     CheckResult twoRandomNumbersAndPropertyTest() {
         final var start = 1 + random.nextInt(Short.MAX_VALUE);
         final var count = 1 + random.nextInt(MAX_COUNT);
-        final var index = random.nextInt(Properties.values().length);
-        final var property = Properties.values()[index].name();
+        final var index = random.nextInt(NumberProperty.values().length);
+        final var property = NumberProperty.values()[index].name();
         final var request = start + " " + count + " " + property;
 
         return program
@@ -339,7 +339,7 @@ public final class NumbersTest extends StageTest {
         };
         properties.add(incorrect[random.nextInt(incorrect.length)]);
 
-        final var correct = new ArrayList<>(List.of(Properties.values()));
+        final var correct = new ArrayList<>(List.of(NumberProperty.values()));
         Collections.shuffle(correct);
         range(0, random.nextInt(MAX_PROPERTIES))
                 .mapToObj(correct::get)

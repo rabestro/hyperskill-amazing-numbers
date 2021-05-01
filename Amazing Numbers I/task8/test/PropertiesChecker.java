@@ -10,7 +10,7 @@ public class PropertiesChecker extends Checker {
     }
 
     public boolean test(UserProgram program) {
-        for (var property : Properties.values()) {
+        for (var property : NumberProperty.values()) {
             final var name = property.name();
 
             if (!program.getOutput().toLowerCase().contains(name.toLowerCase())) {
