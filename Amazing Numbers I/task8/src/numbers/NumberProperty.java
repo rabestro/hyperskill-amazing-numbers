@@ -1,9 +1,11 @@
 package numbers;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
@@ -33,6 +35,10 @@ public enum NumberProperty implements LongPredicate {
         return true;
     });
 
+    public static final Set<Set<String>> MUTUALLY_EXCLUSIVE =
+            Set.of(Set.of(EVEN.name(), ODD.name()), Set.of(DUCK.name(), SPY.name()));
+    public static final Set<String> NAMES = Arrays.stream(values())
+            .map(Enum::name).collect(Collectors.toUnmodifiableSet());
     private final LongPredicate hasProperty;
     private final Pattern pattern = Pattern.compile(
             name() + "\\s*[:-]\\s*(?<value>true|false)",
@@ -65,11 +71,6 @@ public enum NumberProperty implements LongPredicate {
         return Arrays.stream(NumberProperty.values());
     }
 
-    @Override
-    public boolean test(long number) {
-        return hasProperty.test(number);
-    }
-
     public static long digitsSum(long x) {
         long sum = 0;
         for (long i = x; i > 0; i /= 10) {
@@ -92,5 +93,10 @@ public enum NumberProperty implements LongPredicate {
             result *= n;
         }
         return result;
+    }
+
+    @Override
+    public boolean test(long number) {
+        return hasProperty.test(number);
     }
 }

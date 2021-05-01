@@ -24,25 +24,26 @@ public final class NumbersTest extends StageTest {
     private static final int MAX_COUNT = 20;
     private static final int MIN_START = 2;
 
+    private static final String EXPLAIN = "The program should explain this in the help.";
+
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
 
     private static final Function<UserProgram, UserProgram> HELP =
             new TextChecker("Supported requests")
                     .andThen(new RegexChecker(
-                            "(one|a) natural number .* properties",
-                            "Display the instruction on how to use the program"))
+                            "(one|a) natural number",
+                            "In this stage the user may enter one number to print a card. " + EXPLAIN))
                     .andThen(new TextChecker(
                             "two natural numbers",
-                            "In this stage the user may enter two numbers to print a list. "
-                                    + "The program should explain this in the help."))
+                            "In this stage the user may enter two numbers to print a list. " + EXPLAIN))
                     .andThen(new TextChecker(
                             "properties to search for",
                             "In this stage the user may enter two numbers and properties to search for. "
-                                    + "The program should explain this in the help."))
+                                    + EXPLAIN))
                     .andThen(new RegexChecker(
                             "property.*preceded by( a)? minus",
                             "In this stage the user may puts a minus in front of the property. "
-                                    + "The program should explain this in the help."))
+                                    + EXPLAIN))
                     .andThen(new RegexChecker(
                             "0 for( the)? exit",
                             "Display the instruction on how to exit"));
@@ -52,17 +53,22 @@ public final class NumbersTest extends StageTest {
             "The program should ask the user to enter a request."
     );
     private static final Checker ERROR_FIRST = new RegexChecker(
-            "number is( not|n't) (natural|positive)",
-            "Number {0} is not natural. The program should print an error message."
+            "(The )?first (parameter|number) should be( a)? natural number or zero",
+            "Number {0} is wrong. The program should print an error message."
     );
     private static final Checker ERROR_SECOND = new RegexChecker(
-            "number is( not|n't) natural|count( of numbers in the list)? should be( a)? (natural|positive) number.",
+            "(The )?second parameter should be( a)? natural number",
             "Number {0} is not natural. The program should print an error message."
     );
     private static final Checker ERROR_PROPERTY = new RegexChecker(
-            "(The )?property .+ (not found|is (wrong|incorrect))",
-            "The request: \"{0}\" has incorrect property. "
-                    + "If incorrect property specified print the error message and list of available properties."
+            "(The )?property .+ is wrong",
+            "The request: \"{0}\" has one wrong property. "
+                    + "Expected message: \"property ... is wrong\"."
+    );
+    private static final Checker ERROR_PROPERTIES = new RegexChecker(
+            "(The )?properties .+ are wrong",
+            "The request: \"{0}\" has two or more incorrect properties. "
+                    + "Expected that error message contains: \"properties ... are wrong\"."
     );
     private static final Checker HELP_PROPERTIES = new TextChecker(
             "Available properties"
@@ -89,13 +95,13 @@ public final class NumbersTest extends StageTest {
     private final UserProgram program = new UserProgram();
 
     private final String[] wrongProperty = new String[]{
-            "1 10 gay", "40 2 bay", "37 4 8", "67 2 +y-", "2 54 Prime Number", "6 8 ...", "5 9 ,"
+            "1 10 gay", "40 2 bay", "37 4 8", "67 2 +y-", "2 54 Prime", "6 8 ...", "5 9 ,"
     };
     private final String[] wrongSecondProperty = new String[]{
             "1 10 odd girl", "40 2 even day", "37 4 spy 89", "67 2 DUCK +"
     };
-    private final String[] wrongSecondProperties = new String[]{
-            "1 10 odd girl", "40 2 even day", "37 4 spy 89", "67 2 DUCK +"
+    private final String[] wrongTwoProperties = new String[]{
+            "1 10 boy friend", "40 2 sad day", "37 4 hot girl", "67 2 strong drake"
     };
 
     // Stage #3
@@ -133,7 +139,6 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_REQUEST)
                 .execute(negativeNumber)
                 .check(ERROR_FIRST)
-                .check(HELP)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -152,7 +157,6 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_REQUEST)
                 .execute(first + " " + negativeSecond)
                 .check(ERROR_SECOND)
-                .check(HELP)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -308,7 +312,23 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
-
+    @DynamicTest(data = "wrongTwoProperties", order = 62)
+    CheckResult wrongTwoPropertiesRequestTest(String wrongTwoProperties) {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(wrongTwoProperties)
+                .check(ERROR_PROPERTIES)
+                .check(HELP_PROPERTIES)
+                .check(LIST_PROPERTIES)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
     @DynamicTest(data = "searchTwoProperties", order = 65)
     CheckResult twoNumbersAndTwoPropertyTest(int start, int count, String properties) {
         return program

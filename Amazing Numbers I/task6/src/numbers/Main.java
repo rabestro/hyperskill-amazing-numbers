@@ -12,7 +12,6 @@ import java.util.stream.LongStream;
 
 public class Main {
     private static final Pattern SEPARATOR = Pattern.compile("[, ]+");
-
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
