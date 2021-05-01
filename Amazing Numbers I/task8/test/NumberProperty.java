@@ -17,6 +17,15 @@ public enum NumberProperty implements LongPredicate {
     GAPFUL(number -> number > 100 &&
             number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
     SPY(x -> digits(x).sum() == digits(x).reduce(1L, (a, b) -> a * b)),
+    ARMSTRONG(x -> {
+        final var number = String.valueOf(x);
+        final var power = number.length();
+        final var sum = number.chars()
+                .map(Character::getNumericValue)
+                .mapToLong(digit -> pow(digit, power))
+                .sum();
+        return x == sum;
+    }),
     JUMPING(number -> {
         for (long previous = number % 10, rest = number / 10; rest > 0; rest /= 10) {
             long current = rest % 10;
@@ -54,6 +63,14 @@ public enum NumberProperty implements LongPredicate {
         return Optional
                 .ofNullable(matcher.group("value"))
                 .map(Boolean::valueOf);
+    }
+
+    public static long pow(long n, long p) {
+        long result = 1;
+        for (long i = p; i > 0; --i) {
+            result *= n;
+        }
+        return result;
     }
 
 }

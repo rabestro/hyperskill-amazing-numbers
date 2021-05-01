@@ -23,6 +23,15 @@ public enum NumberProperty implements LongPredicate {
             number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
     SPY(x -> digitsSum(x) == digitsProduct(x)),
     HARSHAD(x -> x % digitsSum(x) == 0),
+    ARMSTRONG(x -> {
+        final var number = String.valueOf(x);
+        final var power = number.length();
+        final var sum = number.chars()
+                .map(Character::getNumericValue)
+                .mapToLong(digit -> pow(digit, power))
+                .sum();
+        return x == sum;
+    }),
     JUMPING(n -> {
         for (long p = n % 10, r = n / 10; r > 0; r /= 10) {
             long c = r % 10;
@@ -35,8 +44,11 @@ public enum NumberProperty implements LongPredicate {
         return true;
     });
 
-    public static final Set<Set<String>> MUTUALLY_EXCLUSIVE =
-            Set.of(Set.of(EVEN.name(), ODD.name()), Set.of(DUCK.name(), SPY.name()));
+    public static final Set<Set<String>> MUTUALLY_EXCLUSIVE = Stream.concat(
+            Arrays.stream(values()).map(Enum::name).map(name -> Set.of(name, "-" + name)),
+            Stream.of(Set.of(EVEN.name(), ODD.name()), Set.of(DUCK.name(), SPY.name()), Set.of("-" + EVEN, "-" + ODD))
+    ).collect(Collectors.toUnmodifiableSet());
+
     public static final Set<String> NAMES = Arrays.stream(values())
             .map(Enum::name).collect(Collectors.toUnmodifiableSet());
     private final LongPredicate hasProperty;
