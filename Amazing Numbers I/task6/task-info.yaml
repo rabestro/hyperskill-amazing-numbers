@@ -2,5 +2,5 @@ type: edu
 files:
 - name: src/numbers/Main.java
   visible: true
-- name: src/numbers/NumberProperties.java
+- name: src/numbers/NumberProperty.java
   visible: true

@@ -2,13 +2,13 @@ type: edu
 files:
 - name: src/numbers/Main.java
   visible: true
-- name: src/numbers/NumberProperties.java
-  visible: true
 - name: test/ListChecker.java
-  visible: false
-- name: test/NumberProperties.java
   visible: false
 - name: test/NumbersTest.java
   visible: false
-- name: test/CardChecker.java
+- name: src/numbers/NumberProperty.java
+  visible: true
+- name: test/NumberProperty.java
+  visible: false
+- name: test/PropertiesChecker.java
   visible: false
