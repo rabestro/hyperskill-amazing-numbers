@@ -1,11 +1,13 @@
 package numbers;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static java.lang.Character.getNumericValue;
@@ -32,6 +34,8 @@ public enum NumberProperty implements LongPredicate {
                 .sum();
         return x == sum;
     }),
+    SQUARE(number -> pow((long) Math.sqrt(number), 2) == number),
+    SUNNY(number -> NumberProperty.SQUARE.test(number + 1)),
     JUMPING(n -> {
         for (long p = n % 10, r = n / 10; r > 0; r /= 10) {
             long c = r % 10;
@@ -42,7 +46,9 @@ public enum NumberProperty implements LongPredicate {
             p = c;
         }
         return true;
-    });
+    }),
+    HAPPY(NumberProperty::isHappy),
+    SAD(number -> !isHappy(number));
 
     public static final Set<Set<String>> MUTUALLY_EXCLUSIVE = Stream.concat(
             Arrays.stream(values()).map(Enum::name).map(name -> Set.of(name, "-" + name)),
@@ -110,5 +116,22 @@ public enum NumberProperty implements LongPredicate {
     @Override
     public boolean test(long number) {
         return hasProperty.test(number);
+    }
+
+    private static boolean isHappy(long number) {
+        final var sequence = new HashSet<Long>();
+        return LongStream
+                .iterate(number, i -> !sequence.contains(i), NumberProperty::happyNext)
+                .peek(sequence::add)
+                .anyMatch(i -> i == 1);
+    }
+
+    private static long happyNext(long number) {
+        long result = 0;
+        for (long i = number; i > 0; i /= 10) {
+            int digit = (int) (i % 10);
+            result += digit * digit;
+        }
+        return result;
     }
 }

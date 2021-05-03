@@ -75,7 +75,6 @@ public class Main {
                             Main::mutuallyExclusiveError,
                             () -> printList(start, count, names)
                     );
-
         }
         System.out.println("Goodbye!");
     }

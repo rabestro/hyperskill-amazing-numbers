@@ -101,7 +101,7 @@ public final class NumbersTest extends StageTest {
             "1 10 odd girl", "40 2 even day", "37 4 spy 89", "67 2 DUCK +"
     };
     private final String[] wrongTwoProperties = new String[]{
-            "1 10 boy friend", "40 2 sad day", "37 4 hot girl", "67 2 strong drake"
+            "1 10 boy friend", "40 2 long day", "37 4 hot girl", "67 2 strong drake"
     };
 
     // Stage #3
