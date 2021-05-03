@@ -1,3 +1,4 @@
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
@@ -17,15 +18,8 @@ public enum NumberProperty implements LongPredicate {
     GAPFUL(number -> number > 100 &&
             number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
     SPY(x -> digits(x).sum() == digits(x).reduce(1L, (a, b) -> a * b)),
-    ARMSTRONG(x -> {
-        final var number = String.valueOf(x);
-        final var power = number.length();
-        final var sum = number.chars()
-                .map(Character::getNumericValue)
-                .mapToLong(digit -> pow(digit, power))
-                .sum();
-        return x == sum;
-    }),
+    SQUARE(number -> pow((long) Math.sqrt(number), 2) == number),
+    SUNNY(number -> NumberProperty.SQUARE.test(number + 1)),
     JUMPING(number -> {
         for (long previous = number % 10, rest = number / 10; rest > 0; rest /= 10) {
             long current = rest % 10;
@@ -36,7 +30,9 @@ public enum NumberProperty implements LongPredicate {
             previous = current;
         }
         return true;
-    });
+    }),
+    HAPPY(NumberProperty::isHappy),
+    SAD(number -> !isHappy(number));
 
     private final LongPredicate hasProperty;
     private final Pattern pattern = Pattern.compile(
@@ -73,4 +69,20 @@ public enum NumberProperty implements LongPredicate {
         return result;
     }
 
+    private static boolean isHappy(long number) {
+        final var sequence = new HashSet<Long>();
+        return LongStream
+                .iterate(number, i -> !sequence.contains(i), NumberProperty::happyNext)
+                .peek(sequence::add)
+                .anyMatch(i -> i == 1);
+    }
+
+    private static long happyNext(long number) {
+        long result = 0;
+        for (long i = number; i > 0; i /= 10) {
+            int digit = (int) (i % 10);
+            result += digit * digit;
+        }
+        return result;
+    }
 }
