@@ -35,17 +35,17 @@ public enum NumberProperty implements LongPredicate {
         */
     SQUARE(number -> pow((long) Math.sqrt(number), 2) == number),
     SUNNY(number -> NumberProperty.SQUARE.test(number + 1)),
-//    JUMPING(n -> {
-//        for (long p = n % 10, r = n / 10; r > 0; r /= 10) {
-//            long c = r % 10;
-//            long d = p - c;
-//            if (d != 1 && d != -1) {
-//                return false;
-//            }
-//            p = c;
-//        }
-//        return true;
-//    }),
+    JUMPING(n -> {
+        for (long p = n % 10, r = n / 10; r > 0; r /= 10) {
+            long c = r % 10;
+            long d = p - c;
+            if (d != 1 && d != -1) {
+                return false;
+            }
+            p = c;
+        }
+        return true;
+    }),
 //    HAPPY(NumberProperty::isHappy),
 //    SAD(number -> !isHappy(number)),
     EVEN(number -> number % 2 == 0),

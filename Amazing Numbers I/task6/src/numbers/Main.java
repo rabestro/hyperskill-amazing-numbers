@@ -1,17 +1,14 @@
 package numbers;
 
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 public class Main {
-    private static final Pattern SEPARATOR = Pattern.compile("[, ]+");
+    private static final Pattern PARAMETERS_SEPARATOR = Pattern.compile("[, ]+");
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -20,7 +17,8 @@ public class Main {
 
         while (true) {
             System.out.printf("%nEnter a request: ");
-            final var data = SEPARATOR.split(scanner.nextLine().toUpperCase(), 3);
+            final var data = PARAMETERS_SEPARATOR
+                    .split(scanner.nextLine().toUpperCase(), 3);
             System.out.println();
             if (data[0].isBlank()) {
                 printHelp();
@@ -31,8 +29,7 @@ public class Main {
                 break;
             }
             if (start < 0) {
-                System.out.println("This number is not natural!");
-                printHelp();
+                System.out.println("The first parameter should be a natural number or zero.");
                 continue;
             }
             if (data.length == 1) {
@@ -41,8 +38,7 @@ public class Main {
             }
             final var count = getNaturalNumber(data[1]);
             if (count < 1) {
-                System.out.println("The count of numbers in the list should be a natural number.");
-                printHelp();
+                System.out.println("The second parameter should be a natural number.");
                 continue;
             }
             if (data.length == 2) {
@@ -50,72 +46,77 @@ public class Main {
                 continue;
             }
 
-            final var names = SEPARATOR
+            final var names = PARAMETERS_SEPARATOR
                     .splitAsStream(data[2])
                     .collect(Collectors.toUnmodifiableSet());
 
-            if (!NumberProperty.NAMES.containsAll(names)) {
-                final var unknown = new HashSet<>(names);
-                unknown.removeAll(NumberProperty.NAMES);
+            final var parameters = names.stream()
+                    .map(name -> name.startsWith("-") ? name.substring(1) : name)
+                    .collect(Collectors.toUnmodifiableSet());
+
+            final var isAllParametersCorrect = NumberProperty.NAMES.containsAll(parameters);
+
+            if (!isAllParametersCorrect) {
+                final var wrongParameters = new HashSet<>(parameters);
+                wrongParameters.removeAll(NumberProperty.NAMES);
                 System.out.println(MessageFormat.format(
-                        "The {1,choice,1#property|1<properties} {0} {1,choice,1#is|1<are} unknown.",
-                        unknown, unknown.size())
+                        "The {1,choice,1#property|1<properties} {0} {1,choice,1#is|1<are} wrong.",
+                        wrongParameters, wrongParameters.size())
                 );
-                System.out.println("Available properties: " + NumberProperty.NAMES);
+                System.out.println("Available properties: " + Arrays.toString(NumberProperty.values()));
                 continue;
             }
 
-            final var properties = names.stream()
-                    .map(NumberProperty::valueOf)
-                    .collect(Collectors.toUnmodifiableSet());
-
             NumberProperty.MUTUALLY_EXCLUSIVE
                     .stream()
-                    .filter(properties::containsAll)
+                    .filter(names::containsAll)
                     .findAny()
                     .ifPresentOrElse(
                             Main::mutuallyExclusiveError,
-                            () -> printList(start, count, properties)
+                            () -> printList(start, count, names)
                     );
         }
         System.out.println("Goodbye!");
     }
 
-    private static void printList(long start, long count, Set<NumberProperty> properties) {
-        final var condition = properties.stream()
-                .map(property -> (LongPredicate) property)
+    private static long getNaturalNumber(final String input) {
+        if (input.isBlank() || !input.chars().allMatch(Character::isDigit)) {
+            return -1;
+        }
+        return Long.parseLong(input);
+    }
+
+    private static void printList(long start, long count, Set<String> names) {
+        final var query = names
+                .stream()
+                .map(name -> name.charAt(0) == '-'
+                        ? NumberProperty.valueOf(name.substring(1)).negate()
+                        : NumberProperty.valueOf(name))
                 .reduce(number -> true, LongPredicate::and);
 
         LongStream.iterate(start, n -> n + 1)
-                .filter(condition)
+                .filter(query)
                 .limit(count)
                 .mapToObj(NumberProperty::shortProperties)
                 .forEach(System.out::println);
     }
 
-    private static void mutuallyExclusiveError(Set<NumberProperty> exclusiveProperties) {
+    private static void mutuallyExclusiveError(final Set<String> exclusiveProperties) {
         System.out.println("The request contains mutually exclusive properties: " + exclusiveProperties);
-        System.out.println("There are no numbers with all these properties at once.");
-    }
-
-    private static long getNaturalNumber(final String input) {
-        for (final char symbol : input.toCharArray()) {
-            if (!Character.isDigit(symbol)) {
-                return -1;
-            }
-        }
-        return Long.parseLong(input);
+        System.out.println("There are no numbers with these properties.");
     }
 
     private static void printHelp() {
         System.out.println();
         System.out.println("Supported requests:");
-        System.out.println("- one natural number to print its properties;");
-        System.out.println("- two natural numbers separated by space:");
-        System.out.println("  - a starting number for the list;");
-        System.out.println("  - a count of numbers in the list;");
-        System.out.println("- two natural numbers and property to search for;");
+        System.out.println("- enter a natural number to know its properties;");
+        System.out.println("- enter two natural numbers to obtain the properties of the list:");
+        System.out.println("  * the first parameter represents a starting number;");
+        System.out.println("  * the second parameters show how many consecutive numbers are to be processed;");
         System.out.println("- two natural numbers and two properties to search for;");
-        System.out.println("- 0 for the exit. ");
+//        System.out.println("- two natural numbers and properties to search for;");
+//        System.out.println("- a property preceded by minus must not be present in numbers;");
+        System.out.println("- separate the parameters with one space;");
+        System.out.println("- enter 0 to exit.");
     }
 }

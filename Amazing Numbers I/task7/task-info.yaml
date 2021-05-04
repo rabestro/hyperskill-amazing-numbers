@@ -1,6 +1,1 @@
 type: edu
-files:
-- name: src/numbers/Main.java
-  visible: true
-- name: src/numbers/NumberProperties.java
-  visible: true
