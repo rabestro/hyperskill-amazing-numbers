@@ -15,7 +15,7 @@ import static java.util.stream.IntStream.range;
 
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
-    private static final Pattern SPACE = Pattern.compile(" ", Pattern.LITERAL);
+    private static final Pattern SPACE = Pattern.compile("\\s+");
 
     private static final int NEGATIVE_NUMBERS_TESTS = 5;
     private static final int FIRST_NUMBERS = 15;
@@ -40,12 +40,12 @@ public final class NumbersTest extends StageTest {
                             "properties to search for",
                             "In this stage the user may enter two numbers and properties to search for. "
                                     + EXPLAIN))
-                    .andThen(new RegexChecker(
-                            "property.*preceded by( a)? minus",
+                    .andThen(new TextChecker(
+                            "property preceded by minus",
                             "In this stage the user may puts a minus in front of the property. "
                                     + EXPLAIN))
-                    .andThen(new RegexChecker(
-                            "0 for( the)? exit",
+                    .andThen(new TextChecker(
+                            "enter 0 to exit",
                             "Display the instruction on how to exit"));
 
     private static final Checker ASK_REQUEST = new RegexChecker(
@@ -86,6 +86,8 @@ public final class NumbersTest extends StageTest {
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
     );
+    private static final Checker MUTUALLY = new TextChecker("request contains mutually exclusive properties");
+
     private static final Checker RUNNING = new Checker(Predicate.not(UserProgram::isFinished),
             "The program should continue to work till the user enter \"0\"."
     );
@@ -103,7 +105,9 @@ public final class NumbersTest extends StageTest {
     private final String[] wrongTwoProperties = new String[]{
             "1 10 boy friend", "40 2 long day", "37 4 hot girl", "67 2 strong drake"
     };
-
+    private final String[] mutuallyExclusive = new String[]{
+            "5 1 odd even", "4 3 even odd", "32 2 sunny square", "3153 2 spy duck"
+    };
     // Stage #3
     private final Object[][] searchTwoProperties = new Object[][]{
             {1, 12, "even spy"},

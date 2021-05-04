@@ -109,13 +109,13 @@ public class Main {
     private static void printHelp() {
         System.out.println();
         System.out.println("Supported requests:");
-        System.out.println("- one natural number to print the card;");
-        System.out.println("- two natural numbers to print the list;:");
-        System.out.println("  - a starting number for the list;");
-        System.out.println("  - a count of numbers in the list;");
+        System.out.println("- enter a natural number to know its properties;");
+        System.out.println("- enter two natural numbers to obtain the properties of the list:");
+        System.out.println("  * the first parameter represents a starting number;");
+        System.out.println("  * the second parameters show how many consecutive numbers are to be processed;");
         System.out.println("- two natural numbers and properties to search for;");
-        System.out.println("  - if a property name is preceded by a minus, that ");
-        System.out.println("    property must not be present in the number.");
-        System.out.println("- 0 for the exit. ");
+        System.out.println("- a property preceded by minus must not be present in numbers;");
+        System.out.println("- separate the parameters with one space;");
+        System.out.println("- enter 0 to exit.");
     }
 }
