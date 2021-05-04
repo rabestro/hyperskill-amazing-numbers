@@ -116,16 +116,6 @@ public final class NumbersTest extends StageTest {
             "6 6 -odd -even", "6 7 odd -odd", "8 1 -even even", "3 5 odd duck buzz -duck sunny"
     };
     // Stage #3
-    private final Object[][] searchTwoProperties = new Object[][]{
-            {1, 12, "even spy"},
-            {1, 15, "odd buzz"},
-            {1, 11, "buzz gapful"},
-            {1, 9, "spy buzz"},
-            {1012, 5, "spy even"},
-            {1533, 9, "palindromic odd"},
-            {52342, 6, "gapful duck"},
-            {1432, 12, "duck odd"}
-    };
 
     @DynamicTest(order = 5)
     CheckResult welcomeTest() {
@@ -259,46 +249,39 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    private String[] getProperties() {
-        return Arrays.stream(NumberProperty.values()).map(Enum::name).toArray(String[]::new);
-    }
+    // The test generates and checks request "1 10 <property>" for each property
 
-    @DynamicTest(data = "getProperties", order = 53)
-    CheckResult allPropertiesSearchTest(String property) {
-        final var start = 1 + random.nextInt(Byte.MAX_VALUE);
-        final var count = 1 + random.nextInt(MAX_COUNT);
-        return program
-                .start()
-                .check(WELCOME)
-                .check(HELP)
-                .check(ASK_REQUEST)
-                .execute(start + " " + count + " " + property)
-                .check(new LinesChecker(count + 1))
-                .check(new ListChecker(start, count, property))
-                .check(RUNNING)
-                .execute(0)
-                .check(FINISHED)
-                .result();
+    @DynamicTest(order = 53)
+    CheckResult allPropertiesTest() {
+        program.start().check(WELCOME).check(HELP);
+
+        Arrays.stream(NumberProperty.values())
+                .map(Enum::name)
+                .map("1 10 "::concat)
+                .map(Request::new)
+                .peek(program.check(ASK_REQUEST)::execute)
+                .forEach(request -> program
+                        .check(request.getLinesChecker())
+                        .check(new ListChecker(request))
+                        .check(RUNNING)
+                );
+
+        return program.execute(0).check(FINISHED).result();
     }
 
     // Stage #6
 
     @DynamicTest(repeat = RANDOM_TESTS, order = 55)
-    CheckResult twoRandomNumbersAndPropertyTest() {
-        final var start = 1 + random.nextInt(Short.MAX_VALUE);
-        final var count = 1 + random.nextInt(MAX_COUNT);
-        final var index = random.nextInt(NumberProperty.values().length);
-        final var property = NumberProperty.values()[index].name();
-        final var request = start + " " + count + " " + property;
-
+    CheckResult randomTwoNumbersAndPropertyTest() {
+        final var request = Request.random(Request.Parameter.THREE);
         return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(ASK_REQUEST)
                 .execute(request)
-                .check(new LinesChecker(count + 1))
-                .check(new ListChecker(start, count, property))
+                .check(request.getLinesChecker())
+                .check(new ListChecker(request))
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -342,16 +325,29 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
+    private Request[] searchTwoProperties() {
+        return Stream.of(
+                "1 7 even spy",
+                "1 10 odd buzz",
+                "1 9 buzz gapful",
+                "1 10 spy buzz",
+                "100000 2 even spy",
+                "100 4 odd gapful",
+                "2000 4 palindromic duck")
+                .map(Request::new)
+                .toArray(Request[]::new);
+    }
+
     @DynamicTest(data = "searchTwoProperties", order = 65)
-    CheckResult twoNumbersAndTwoPropertyTest(int start, int count, String properties) {
+    CheckResult twoNumbersAndTwoPropertyTest(Request request) {
         return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(ASK_REQUEST)
-                .execute(start + " " + count + " " + properties)
-                .check(new LinesChecker(count + 1))
-                .check(new ListChecker(start, count, properties))
+                .execute(request)
+                .check(request.getLinesChecker())
+                .check(new ListChecker(request))
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -401,7 +397,7 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    private Object[][] getRandomRequests() {
+    private Request[] getRandomRequests() {
         return Stream.of(
                 "1 7 odd spy palindromic harshad",
                 "1 10 even palindromic duck buzz",
@@ -410,21 +406,20 @@ public final class NumbersTest extends StageTest {
                 "100000 2 even spy buzz gapful",
                 "100 4 odd spy gapful",
                 "2000 4 even palindromic duck")
-                .map($ -> SPACE.split($, 3))
-                .map($ -> new Object[]{Integer.parseInt($[0]), Integer.parseInt($[1]), $[2]})
-                .toArray(Object[][]::new);
+                .map(Request::new)
+                .toArray(Request[]::new);
     }
 
     @DynamicTest(data = "getRandomRequests", order = 65)
-    CheckResult manyPropertiesTest(int start, int count, String properties) {
+    CheckResult manyPropertiesTest(Request request) {
         return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(ASK_REQUEST)
-                .execute(start + " " + count + " " + properties)
-                .check(new LinesChecker(count + 1))
-                .check(new ListChecker(start, count, properties))
+                .execute(request)
+                .check(request.getLinesChecker())
+                .check(new ListChecker(request))
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -448,6 +443,26 @@ public final class NumbersTest extends StageTest {
                 .execute(0)
                 .check(FINISHED)
                 .result();
+    }
+
+    // The test generates and checks request "1 15 -PROPERTY" for all properties
+
+    @DynamicTest(order = 85)
+    CheckResult allMinusPropertiesTest() {
+        program.start().check(WELCOME).check(HELP);
+
+        Arrays.stream(NumberProperty.values())
+                .map(Enum::name)
+                .map("1 15 -"::concat)
+                .map(Request::new)
+                .peek(program.check(ASK_REQUEST)::execute)
+                .forEach(request -> program
+                        .check(request.getLinesChecker())
+                        .check(new ListChecker(request))
+                        .check(RUNNING)
+                );
+
+        return program.execute(0).check(FINISHED).result();
     }
 
 }

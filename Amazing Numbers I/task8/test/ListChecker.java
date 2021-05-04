@@ -20,6 +20,10 @@ public class ListChecker extends Checker {
     private final long expectedCount;
     private final long[] expectedList;
 
+    public ListChecker(Request request) {
+        this(request.getStart(), request.getCount(), request.getProperties());
+    }
+
     public ListChecker(long start, long count) {
         this(start, count, new String[0]);
     }
@@ -31,11 +35,11 @@ public class ListChecker extends Checker {
     public ListChecker(long start, long count, String[] queries) {
         super("The list is incorrect");
         this.validator = this::test;
-        this.expectedList = getList(start, count, queries);
+        this.expectedList = getExpectedList(start, count, queries);
         this.expectedCount = count;
     }
 
-    private static long[] getList(long start, long count, String[] queries) {
+    private static long[] getExpectedList(long start, long count, String[] queries) {
         final var condition = Arrays.stream(queries).map(query -> {
             final var isNegative = query.startsWith("-");
             final var name = isNegative ? query.substring(1) : query;
@@ -43,7 +47,8 @@ public class ListChecker extends Checker {
             return isNegative ? property.negate() : property;
         }).reduce(number -> true, LongPredicate::and);
 
-        return LongStream.iterate(start, n -> n > 0, n -> n + 1)
+        return LongStream
+                .iterate(start, n -> n > 0, n -> n + 1)
                 .filter(condition).limit(count).toArray();
     }
 

@@ -6,9 +6,5 @@ files:
   visible: false
 - name: test/NumbersTest.java
   visible: false
-- name: src/numbers/NumberProperty.java
-  visible: true
-- name: test/NumberProperty.java
-  visible: false
-- name: test/PropertiesChecker.java
+- name: test/Request.java
   visible: false
