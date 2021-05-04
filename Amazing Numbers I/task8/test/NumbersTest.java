@@ -24,10 +24,9 @@ public final class NumbersTest extends StageTest {
     private static final int MAX_COUNT = 20;
     private static final int MIN_START = 2;
 
-    private static final String EXPLAIN = "The program should explain this in the help.";
-
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
 
+    private static final String EXPLAIN = "The program should explain this in the help.";
     private static final Function<UserProgram, UserProgram> HELP =
             new TextChecker("Supported requests")
                     .andThen(new RegexChecker(
@@ -54,11 +53,11 @@ public final class NumbersTest extends StageTest {
     );
     private static final Checker ERROR_FIRST = new RegexChecker(
             "(The )?first (parameter|number) should be( a)? natural number or zero",
-            "Number {0} is wrong. The program should print an error message."
+            "The first parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_SECOND = new RegexChecker(
             "(The )?second parameter should be( a)? natural number",
-            "Number {0} is not natural. The program should print an error message."
+            "The second parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_PROPERTY = new RegexChecker(
             "(The )?property .+ is wrong",
@@ -86,8 +85,11 @@ public final class NumbersTest extends StageTest {
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
     );
-    private static final Checker MUTUALLY = new TextChecker("request contains mutually exclusive properties");
-
+    private static final Checker MUTUALLY_EXCLUSIVE = new TextChecker(
+            "request contains mutually exclusive properties",
+            "The request contains mutually exclusive properties. "
+                    + "The program should cancel the request and warn the user."
+    );
     private static final Checker RUNNING = new Checker(Predicate.not(UserProgram::isFinished),
             "The program should continue to work till the user enter \"0\"."
     );
@@ -106,7 +108,12 @@ public final class NumbersTest extends StageTest {
             "1 10 boy friend", "40 2 long day", "37 4 hot girl", "67 2 strong drake"
     };
     private final String[] mutuallyExclusive = new String[]{
-            "5 1 odd even", "4 3 even odd", "32 2 sunny square", "3153 2 spy duck"
+            // Stage #6 Two properties
+            "5 1 odd even", "4 3 even odd", "32 2 sunny square", "3153 2 spy duck", "6 7 duck spy",
+            // Stage #7 Several properties
+            "1 2 spy odd sunny even", "7 2 sunny even duck buzz square", "9 5 even spy buzz duck",
+            // Stage #8 Properties preceded by minus
+            "6 6 -odd -even", "6 7 odd -odd", "8 1 -even even", "3 5 odd duck buzz -duck sunny"
     };
     // Stage #3
     private final Object[][] searchTwoProperties = new Object[][]{
@@ -316,6 +323,7 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
+
     @DynamicTest(data = "wrongTwoProperties", order = 62)
     CheckResult wrongTwoPropertiesRequestTest(String wrongTwoProperties) {
         return program
@@ -333,6 +341,7 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
+
     @DynamicTest(data = "searchTwoProperties", order = 65)
     CheckResult twoNumbersAndTwoPropertyTest(int start, int count, String properties) {
         return program
@@ -397,8 +406,8 @@ public final class NumbersTest extends StageTest {
                 "1 7 odd spy palindromic harshad",
                 "1 10 even palindromic duck buzz",
                 "1 9 even palindromic duck buzz gapful",
-                "1 10 even harshad duck buzz gapful",
-                "100000 2 even harshad spy buzz gapful",
+                "1 10 even sunny duck buzz gapful",
+                "100000 2 even spy buzz gapful",
                 "100 4 odd spy gapful",
                 "2000 4 even palindromic duck")
                 .map($ -> SPACE.split($, 3))
@@ -423,7 +432,22 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    // Stage #8 Jumping numbers & minus in front of the property
+    // Stage #8 If a property is preceded by a minus, this property should not be present in a number
 
+    @DynamicTest(data = "mutuallyExclusive", order = 80)
+    CheckResult mutuallyExclusivePropertiesTest(String mutuallyExclusive) {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(mutuallyExclusive)
+                .check(MUTUALLY_EXCLUSIVE)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
 
 }

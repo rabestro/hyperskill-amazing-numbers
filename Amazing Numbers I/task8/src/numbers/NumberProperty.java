@@ -52,7 +52,7 @@ public enum NumberProperty implements LongPredicate {
 
     public static final Set<Set<String>> MUTUALLY_EXCLUSIVE = Stream.concat(
             Arrays.stream(values()).map(Enum::name).map(name -> Set.of(name, "-" + name)),
-            Stream.of(Set.of(EVEN.name(), ODD.name()), Set.of(DUCK.name(), SPY.name()), Set.of("-" + EVEN, "-" + ODD))
+            Stream.of(Set.of("EVEN", "ODD"), Set.of("DUCK", "SPY"), Set.of("-EVEN", "-ODD"), Set.of("SUNNY", "SQUARE"))
     ).collect(Collectors.toUnmodifiableSet());
 
     public static final Set<String> NAMES = Arrays.stream(values())
