@@ -53,7 +53,10 @@ public enum NumberProperty implements LongPredicate {
 
     public static final Set<Set<String>> MUTUALLY_EXCLUSIVE = Stream.concat(
             Arrays.stream(values()).map(Enum::name).map(name -> Set.of(name, "-" + name)),
-            Stream.of(Set.of("EVEN", "ODD"), Set.of("DUCK", "SPY"), Set.of("-EVEN", "-ODD"), Set.of("SUNNY", "SQUARE"))
+            Stream.of(
+                    Set.of("EVEN", "ODD"), Set.of("DUCK", "SPY"), Set.of("-EVEN", "-ODD"),
+                    Set.of("SUNNY", "SQUARE"), Set.of("SAD", "HAPPY"), Set.of("-SAD", "-HAPPY")
+            )
     ).collect(Collectors.toUnmodifiableSet());
 
     public static final Set<String> NAMES = Arrays.stream(values()).map(Enum::name)
@@ -106,11 +109,6 @@ public enum NumberProperty implements LongPredicate {
         return result;
     }
 
-    @Override
-    public boolean test(long number) {
-        return hasProperty.test(number);
-    }
-
     private static boolean isHappy(long number) {
         final var sequence = new HashSet<Long>();
         return LongStream
@@ -126,5 +124,10 @@ public enum NumberProperty implements LongPredicate {
             result += digit * digit;
         }
         return result;
+    }
+
+    @Override
+    public boolean test(long number) {
+        return hasProperty.test(number);
     }
 }
