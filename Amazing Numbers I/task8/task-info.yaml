@@ -8,3 +8,5 @@ files:
   visible: false
 - name: test/Request.java
   visible: false
+- name: src/numbers/NumberProperty.java
+  visible: true

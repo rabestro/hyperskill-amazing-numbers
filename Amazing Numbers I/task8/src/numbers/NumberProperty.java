@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.LongPredicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -24,16 +23,18 @@ public enum NumberProperty implements LongPredicate {
     GAPFUL(number -> number > 100 &&
             number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
     SPY(x -> digitsSum(x) == digitsProduct(x)),
-    HARSHAD(x -> x % digitsSum(x) == 0),
-    ARMSTRONG(x -> {
-        final var number = String.valueOf(x);
-        final var power = number.length();
-        final var sum = number.chars()
-                .map(Character::getNumericValue)
-                .mapToLong(digit -> pow(digit, power))
-                .sum();
-        return x == sum;
-    }),
+    /*
+        HARSHAD(x -> x % digitsSum(x) == 0),
+        ARMSTRONG(x -> {
+            final var number = String.valueOf(x);
+            final var power = number.length();
+            final var sum = number.chars()
+                    .map(Character::getNumericValue)
+                    .mapToLong(digit -> pow(digit, power))
+                    .sum();
+            return x == sum;
+        }),
+        */
     SQUARE(number -> pow((long) Math.sqrt(number), 2) == number),
     SUNNY(number -> NumberProperty.SQUARE.test(number + 1)),
     JUMPING(n -> {
@@ -55,13 +56,9 @@ public enum NumberProperty implements LongPredicate {
             Stream.of(Set.of("EVEN", "ODD"), Set.of("DUCK", "SPY"), Set.of("-EVEN", "-ODD"), Set.of("SUNNY", "SQUARE"))
     ).collect(Collectors.toUnmodifiableSet());
 
-    public static final Set<String> NAMES = Arrays.stream(values())
-            .map(Enum::name).collect(Collectors.toUnmodifiableSet());
+    public static final Set<String> NAMES = Arrays.stream(values()).map(Enum::name)
+            .collect(Collectors.toUnmodifiableSet());
     private final LongPredicate hasProperty;
-    private final Pattern pattern = Pattern.compile(
-            name() + "\\s*[:-]\\s*(?<value>true|false)",
-            Pattern.CASE_INSENSITIVE
-    );
 
     NumberProperty(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
@@ -83,10 +80,6 @@ public enum NumberProperty implements LongPredicate {
             sj.add(String.format("%12s: %b%n", property.name().toLowerCase(), property.test(x)));
         }
         return sj.toString();
-    }
-
-    public static Stream<NumberProperty> stream() {
-        return Arrays.stream(NumberProperty.values());
     }
 
     public static long digitsSum(long x) {

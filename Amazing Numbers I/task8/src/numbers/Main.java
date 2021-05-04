@@ -103,7 +103,7 @@ public class Main {
 
     private static void mutuallyExclusiveError(final Set<String> exclusiveProperties) {
         System.out.println("The request contains mutually exclusive properties: " + exclusiveProperties);
-        System.out.println("There are no numbers with all these properties at once.");
+        System.out.println("There are no numbers with these properties.");
     }
 
     private static void printHelp() {

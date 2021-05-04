@@ -15,7 +15,6 @@ import static java.util.stream.IntStream.range;
 
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
-    private static final Pattern SPACE = Pattern.compile("\\s+");
 
     private static final int NEGATIVE_NUMBERS_TESTS = 5;
     private static final int FIRST_NUMBERS = 15;
@@ -399,13 +398,17 @@ public final class NumbersTest extends StageTest {
 
     private Request[] getRandomRequests() {
         return Stream.of(
-                "1 7 odd spy palindromic harshad",
+                "1 7 odd spy palindromic",
                 "1 10 even palindromic duck buzz",
                 "1 9 even palindromic duck buzz gapful",
                 "1 10 even sunny duck buzz gapful",
                 "100000 2 even spy buzz gapful",
                 "100 4 odd spy gapful",
-                "2000 4 even palindromic duck")
+                "2000 4 even palindromic duck",
+                // Stage #8
+                "1 15 odd spy -duck spy buzz",
+                "1 2 jumping happy -spy"
+        )
                 .map(Request::new)
                 .toArray(Request[]::new);
     }
