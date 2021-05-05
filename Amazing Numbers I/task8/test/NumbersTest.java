@@ -30,41 +30,41 @@ public final class NumbersTest extends StageTest {
             new TextChecker("Supported requests")
                     .andThen(new RegexChecker(
                             "(one|a) natural number",
-                            "In this stage the user may enter one number to print a card. " + EXPLAIN))
+                            "In this stage, a user can enter one number to print a card. " + EXPLAIN))
                     .andThen(new TextChecker(
                             "two natural numbers",
-                            "In this stage the user may enter two numbers to print a list. " + EXPLAIN))
+                            "In this stage, a user can enter two numbers to print a list. " + EXPLAIN))
                     .andThen(new TextChecker(
                             "properties to search for",
-                            "In this stage the user may enter two numbers and properties to search for. "
+                            "In this stage, a user can enter two numbers and properties to search for. "
                                     + EXPLAIN))
                     .andThen(new TextChecker(
                             "property preceded by minus",
-                            "In this stage the user may puts a minus in front of the property. "
+                            "In this stage, a user can a minus in front of the property. "
                                     + EXPLAIN))
                     .andThen(new TextChecker(
                             "enter 0 to exit",
-                            "Display the instruction on how to exit"));
+                            "Display the instructions on how to exit"));
 
     private static final Checker ASK_REQUEST = new RegexChecker(
-            "enter( a)? request",
-            "The program should ask the user to enter a request."
+            "enter a request",
+            "The program should ask a user to enter a request."
     );
     private static final Checker ERROR_FIRST = new RegexChecker(
-            "(The )?first (parameter|number) should be( a)? natural number or zero",
+            "The first (parameter|number) should be a natural number or zero",
             "The first parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_SECOND = new RegexChecker(
-            "(The )?second parameter should be( a)? natural number",
+            "The second parameter should be a natural number",
             "The second parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_PROPERTY = new RegexChecker(
-            "(The )?property .+ is wrong",
+            "The property .+ is wrong",
             "The request: \"{0}\" has one wrong property. "
                     + "Expected message: \"property ... is wrong\"."
     );
     private static final Checker ERROR_PROPERTIES = new RegexChecker(
-            "(The )?properties .+ are wrong",
+            "The properties .+ are wrong",
             "The request: \"{0}\" has two or more incorrect properties. "
                     + "Expected that error message contains: \"properties ... are wrong\"."
     );
@@ -78,14 +78,14 @@ public final class NumbersTest extends StageTest {
                     .map(Pattern::compile)
                     .map(p -> p.matcher(program.getOutput()))
                     .allMatch(Matcher::find),
-            "If incorrect property specified then show the list of available properties."
+            "If incorrect property has been specified, show the list of the available properties."
     );
     private static final Checker PROPERTIES_OF = new RegexChecker(
             "properties of \\d",
-            "The first line of number''s properties should contains \"Properties of {0}\"."
+            "The first line of number's properties should contain \"Properties of {0}\"."
     );
     private static final Checker MUTUALLY_EXCLUSIVE = new TextChecker(
-            "request contains mutually exclusive properties",
+            "The request contains mutually exclusive properties",
             "The request contains mutually exclusive properties. "
                     + "The program should cancel the request and warn the user."
     );
@@ -93,7 +93,7 @@ public final class NumbersTest extends StageTest {
             "The program should continue to work till the user enter \"0\"."
     );
     private static final Checker FINISHED = new Checker(UserProgram::isFinished,
-            "The program should finish after the user enter \"0\"."
+            "The program should finish when the user entered \"0\"."
     );
     private final UserProgram program = new UserProgram();
 
