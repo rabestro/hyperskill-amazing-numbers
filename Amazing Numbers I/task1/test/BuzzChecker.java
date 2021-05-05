@@ -1,9 +1,9 @@
-import util.AbstractChecker;
+import util.Checker;
 import util.UserProgram;
 
 import java.util.regex.Pattern;
 
-public class BuzzChecker extends AbstractChecker {
+public class BuzzChecker extends Checker {
     private static final Pattern BUZZ_NUMBER = Pattern.compile(
             "is(?<buzz>n't| not)?+( a)?+ buzz", Pattern.CASE_INSENSITIVE);
     private static final Pattern EXPLANATION = Pattern.compile(
@@ -14,9 +14,9 @@ public class BuzzChecker extends AbstractChecker {
 
     BuzzChecker(long number) {
         this.number = number;
+        this.validator = this::test;
     }
 
-    @Override
     public boolean test(UserProgram program) {
         final var matcher = BUZZ_NUMBER.matcher(program.getOutput());
         if (!matcher.find()) {

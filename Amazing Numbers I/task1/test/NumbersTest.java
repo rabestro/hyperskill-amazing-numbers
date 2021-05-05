@@ -19,7 +19,9 @@ public final class NumbersTest extends StageTest {
             "number is( not|n't) natural",
             "Number {0} is not natural. The program should print an error message."
     );
-
+    private static final Checker FINISHED = new Checker(UserProgram::isFinished,
+            "The program should finish when the user entered \"0\"."
+    );
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 
     @DynamicTest(data = "notNaturalNumbers", order = 5)
@@ -29,7 +31,7 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_FOR_NUMBER)
                 .execute(number)
                 .check(ERROR_MESSAGE)
-                .finished()
+                .check(FINISHED)
                 .result();
     }
 
@@ -49,10 +51,10 @@ public final class NumbersTest extends StageTest {
                 .check(new LinesChecker(4))
                 .check(new RegexChecker("number is (even|odd)",
                         "The program should calculate and print the parity of the given number."))
-                .contains(number % 2 == 0 ? "even" : "odd",
-                        "Number's parity is incorrect. Number {0} should be {1}.")
+                .check(new TextChecker(number % 2 == 0 ? "even" : "odd",
+                        "Number's parity is incorrect. Number {0} should be {1}."))
                 .check(new BuzzChecker(number))
-                .finished()
+                .check(FINISHED)
                 .result();
     }
 
