@@ -1,7 +1,10 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
-import util.*;
+import util.Checker;
+import util.RegexChecker;
+import util.TextChecker;
+import util.UserProgram;
 
 import java.util.Random;
 import java.util.function.Function;
@@ -14,20 +17,15 @@ public final class NumbersTest extends StageTest {
     private static final int NEGATIVE_NUMBERS_TESTS = 5;
     private static final int FIRST_NUMBERS = 15;
     private static final int RANDOM_TESTS = 10;
-    private static final int MAX_COUNT = 20;
-    private static final int MIN_START = 2;
 
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
 
     private static final String EXPLAIN = "The program should explain this in the help.";
     private static final Function<UserProgram, UserProgram> HELP =
             new TextChecker("Supported requests")
-                    .andThen(new RegexChecker(
-                            "(one|a) natural number",
-                            "In this stage, a user can enter one number to print a card. " + EXPLAIN))
                     .andThen(new TextChecker(
-                            "two natural numbers",
-                            "In this stage, a user can enter two numbers to print a list. " + EXPLAIN))
+                            "enter a natural number",
+                            "In this stage, a user can enter one number to print a card. " + EXPLAIN))
                     .andThen(new TextChecker(
                             "enter 0 to exit",
                             "Display the instructions on how to exit"));
@@ -40,11 +38,6 @@ public final class NumbersTest extends StageTest {
             "The first (parameter|number) should be a natural number or zero",
             "The first parameter \"{0}\" is wrong. The program should print an error message."
     );
-    private static final Checker ERROR_SECOND = new RegexChecker(
-            "The second (parameter|number) should be a natural number",
-            "The second parameter \"{0}\" is wrong. The program should print an error message."
-    );
-
     private static final Checker PROPERTIES_OF = new RegexChecker(
             "properties of \\d",
             "The first line of number's properties should contain \"Properties of {0}\"."
@@ -56,7 +49,6 @@ public final class NumbersTest extends StageTest {
             "The program should finish when the user entered \"0\"."
     );
     private final UserProgram program = new UserProgram();
-
 
     // Stage #3
 
@@ -90,24 +82,6 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    @DynamicTest(repeat = RANDOM_TESTS, order = 15)
-    CheckResult notNaturalSecondNumberTest() {
-        int first = 1 + random.nextInt(Short.MAX_VALUE);
-        int negativeSecond = -random.nextInt(Short.MAX_VALUE);
-        return program
-                .start()
-                .check(WELCOME)
-                .check(HELP)
-                .check(ASK_REQUEST)
-                .execute(first + " " + negativeSecond)
-                .check(ERROR_SECOND)
-                .check(RUNNING)
-                .check(ASK_REQUEST)
-                .execute(0)
-                .check(FINISHED)
-                .result();
-    }
-
     @DynamicTest(order = 20)
     CheckResult naturalNumbersTest() {
         final var numbers = LongStream.concat(
@@ -131,23 +105,6 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
-
-    @DynamicTest(order = 40)
-    CheckResult firstNumbersListTest() {
-        return program
-                .start()
-                .check(WELCOME)
-                .check(HELP)
-                .check(ASK_REQUEST)
-                .execute("1 " + FIRST_NUMBERS)
-                .check(new LinesChecker(FIRST_NUMBERS + 1))
-                .check(new ListChecker(1, FIRST_NUMBERS))
-                .execute(0)
-                .check(FINISHED)
-                .result();
-    }
-
-
 
 
 }

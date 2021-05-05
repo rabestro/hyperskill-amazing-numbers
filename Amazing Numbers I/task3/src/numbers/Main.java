@@ -16,7 +16,7 @@ public class Main {
                 break;
             }
             if (number < 0) {
-                System.out.println("This number is not natural!");
+                System.out.println("The first parameter should be a natural number or zero.");
                 printHelp();
                 continue;
             }
@@ -36,7 +36,7 @@ public class Main {
     private static void printHelp() {
         System.out.println();
         System.out.println("Supported requests:");
-        System.out.println("- natural number to print its properties;");
-        System.out.println("- 0 for the exit.");
+        System.out.println("- enter a natural number to know its properties;");
+        System.out.println("- enter 0 to exit.");
     }
 }
