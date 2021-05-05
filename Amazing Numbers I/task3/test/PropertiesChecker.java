@@ -1,7 +1,7 @@
-import util.AbstractChecker;
+import util.Checker;
 import util.UserProgram;
 
-public class PropertiesChecker extends AbstractChecker {
+public class PropertiesChecker extends Checker {
     private final long number;
 
     public PropertiesChecker(long number) {
@@ -10,11 +10,11 @@ public class PropertiesChecker extends AbstractChecker {
     }
 
     public boolean test(UserProgram program) {
-        for (var property : NumberProperties.values()) {
+        for (var property : NumberProperty.values()) {
             final var name = property.name();
 
             if (!program.getOutput().toLowerCase().contains(name.toLowerCase())) {
-                feedback = "Property \"{0}\" not found in the output.";
+                feedback = "The property \"{0}\" was not found in the output.";
                 parameters = new Object[]{name};
                 return false;
             }
@@ -30,7 +30,7 @@ public class PropertiesChecker extends AbstractChecker {
             final var actual = actualValue.get();
 
             if (expected != actual) {
-                feedback = "For property {0} the expected value is {1} but found {2}.";
+                feedback = "For the property {0}, the expected value is {1} but was found {2}.";
                 parameters = new Object[]{name, expected, actual};
                 return false;
             }

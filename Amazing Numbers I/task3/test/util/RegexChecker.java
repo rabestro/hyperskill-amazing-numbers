@@ -2,7 +2,7 @@ package util;
 
 import java.util.regex.Pattern;
 
-public class RegexChecker extends AbstractChecker {
+public class RegexChecker extends Checker {
     private final Pattern expected;
 
     public RegexChecker(final String regexp, final String feedback) {

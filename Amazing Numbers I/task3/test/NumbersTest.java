@@ -5,52 +5,65 @@ import util.*;
 
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.LongStream;
 
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
-    private static final long RANDOM_TESTS = 20;
-    private static final long NEGATIVE_NUMBERS_TESTS = 5;
-    private static final long FIRST_NUMBERS = 15;
+
+    private static final int NEGATIVE_NUMBERS_TESTS = 5;
+    private static final int FIRST_NUMBERS = 15;
+    private static final int RANDOM_TESTS = 10;
+    private static final int MAX_COUNT = 20;
+    private static final int MIN_START = 2;
 
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
 
+    private static final String EXPLAIN = "The program should explain this in the help.";
     private static final Function<UserProgram, UserProgram> HELP =
             new TextChecker("Supported requests")
                     .andThen(new RegexChecker(
-                            "natural number .* properties",
-                            "Display the instruction on how to use the program")
-                    )
-                    .andThen(new RegexChecker(
-                            "0 for( the)? exit",
-                            "Display the instruction on how to exit")
-                    );
-    private static final Checker ASK_REQUEST = new RegexChecker(
-            "enter( a)? request",
-            "The program should ask the user to enter a request."
+                            "(one|a) natural number",
+                            "In this stage, a user can enter one number to print a card. " + EXPLAIN))
+                    .andThen(new TextChecker(
+                            "two natural numbers",
+                            "In this stage, a user can enter two numbers to print a list. " + EXPLAIN))
+                    .andThen(new TextChecker(
+                            "enter 0 to exit",
+                            "Display the instructions on how to exit"));
+
+    private static final Checker ASK_REQUEST = new TextChecker(
+            "enter a request",
+            "The program should ask a user to enter a request."
     );
-    private static final Checker ERROR_MESSAGE = new RegexChecker(
-            "number is( not|n't) natural",
-            "Number {0} is not natural. The program should print an error message."
+    private static final Checker ERROR_FIRST = new RegexChecker(
+            "The first (parameter|number) should be a natural number or zero",
+            "The first parameter \"{0}\" is wrong. The program should print an error message."
     );
+    private static final Checker ERROR_SECOND = new RegexChecker(
+            "The second (parameter|number) should be a natural number",
+            "The second parameter \"{0}\" is wrong. The program should print an error message."
+    );
+
     private static final Checker PROPERTIES_OF = new RegexChecker(
             "properties of \\d",
-            "The first line of number''s properties should contains \"Properties of {0}\"."
+            "The first line of number's properties should contain \"Properties of {0}\"."
     );
-
-    private static final Checker RUNNING = new RunnerChecker(
+    private static final Checker RUNNING = new Checker(Predicate.not(UserProgram::isFinished),
             "The program should continue to work till the user enter \"0\"."
     );
-
-    private static final Checker FINISHED = new FinishChecker(
-            "The program should finish after the user enter \"0\"."
+    private static final Checker FINISHED = new Checker(UserProgram::isFinished,
+            "The program should finish when the user entered \"0\"."
     );
+    private final UserProgram program = new UserProgram();
 
-    private UserProgram program = new UserProgram();
+
+    // Stage #3
 
     @DynamicTest(order = 5)
     CheckResult welcomeTest() {
-        return program.start()
+        return program
+                .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(RUNNING)
@@ -60,20 +73,16 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    private long[] getNegativeNumbers() {
-        return random.longs(NEGATIVE_NUMBERS_TESTS, Short.MIN_VALUE, -1).toArray();
-    }
-
-    @DynamicTest(data = "getNegativeNumbers", order = 10)
-    CheckResult notNaturalNumbersTest(final long negativeNumber) {
+    @DynamicTest(repeat = NEGATIVE_NUMBERS_TESTS, order = 10)
+    CheckResult notNaturalNumbersTest() {
+        long negativeNumber = -random.nextInt(Byte.MAX_VALUE) - 1L;
         return program
                 .start()
                 .check(WELCOME)
                 .check(HELP)
                 .check(ASK_REQUEST)
                 .execute(negativeNumber)
-                .check(ERROR_MESSAGE)
-                .check(HELP)
+                .check(ERROR_FIRST)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -81,24 +90,39 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    private LongStream getNumbers() {
-        return LongStream.concat(
-                LongStream.range(1, FIRST_NUMBERS),
-                random.longs(RANDOM_TESTS, 1, Long.MAX_VALUE)
-        );
+    @DynamicTest(repeat = RANDOM_TESTS, order = 15)
+    CheckResult notNaturalSecondNumberTest() {
+        int first = 1 + random.nextInt(Short.MAX_VALUE);
+        int negativeSecond = -random.nextInt(Short.MAX_VALUE);
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute(first + " " + negativeSecond)
+                .check(ERROR_SECOND)
+                .check(RUNNING)
+                .check(ASK_REQUEST)
+                .execute(0)
+                .check(FINISHED)
+                .result();
     }
 
     @DynamicTest(order = 20)
     CheckResult naturalNumbersTest() {
+        final var numbers = LongStream.concat(
+                LongStream.range(1, FIRST_NUMBERS),
+                random.longs(RANDOM_TESTS, 1, Long.MAX_VALUE)
+        );
+
         program.start().check(WELCOME).check(HELP);
 
-        getNumbers()
-                .forEach(number -> program
-                        .check(ASK_REQUEST)
-                        .execute(number)
-                        .check(PROPERTIES_OF)
-                        .check(new PropertiesChecker(number))
-                        .check(RUNNING));
+        numbers.forEach(number -> program
+                .check(ASK_REQUEST)
+                .execute(number)
+                .check(PROPERTIES_OF)
+                .check(new PropertiesChecker(number))
+                .check(RUNNING));
 
         return program
                 .check(RUNNING)
@@ -107,6 +131,23 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
+
+    @DynamicTest(order = 40)
+    CheckResult firstNumbersListTest() {
+        return program
+                .start()
+                .check(WELCOME)
+                .check(HELP)
+                .check(ASK_REQUEST)
+                .execute("1 " + FIRST_NUMBERS)
+                .check(new LinesChecker(FIRST_NUMBERS + 1))
+                .check(new ListChecker(1, FIRST_NUMBERS))
+                .execute(0)
+                .check(FINISHED)
+                .result();
+    }
+
+
 
 
 }
