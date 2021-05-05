@@ -10,11 +10,11 @@ public class PropertiesChecker extends Checker {
     }
 
     public boolean test(UserProgram program) {
-        for (var property : Properties.values()) {
+        for (var property : NumberProperty.values()) {
             final var name = property.name();
 
             if (!program.getOutput().toLowerCase().contains(name.toLowerCase())) {
-                feedback = "Property \"{0}\" not found in the output.";
+                feedback = "The property \"{0}\" was not found in the output.";
                 parameters = new Object[]{name};
                 return false;
             }
@@ -30,7 +30,7 @@ public class PropertiesChecker extends Checker {
             final var actual = actualValue.get();
 
             if (expected != actual) {
-                feedback = "For property {0} the expected value is {1} but found {2}.";
+                feedback = "For the property {0}, the expected value is {1} but was found {2}.";
                 parameters = new Object[]{name, expected, actual};
                 return false;
             }

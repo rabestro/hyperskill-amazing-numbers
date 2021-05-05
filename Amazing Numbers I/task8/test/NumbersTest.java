@@ -46,7 +46,7 @@ public final class NumbersTest extends StageTest {
                             "enter 0 to exit",
                             "Display the instructions on how to exit"));
 
-    private static final Checker ASK_REQUEST = new RegexChecker(
+    private static final Checker ASK_REQUEST = new TextChecker(
             "enter a request",
             "The program should ask a user to enter a request."
     );
@@ -55,7 +55,7 @@ public final class NumbersTest extends StageTest {
             "The first parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_SECOND = new RegexChecker(
-            "The second parameter should be a natural number",
+            "The second (parameter|number) should be a natural number",
             "The second parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_PROPERTY = new RegexChecker(
