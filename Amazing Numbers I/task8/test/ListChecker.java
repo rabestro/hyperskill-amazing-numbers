@@ -94,7 +94,7 @@ public class ListChecker extends Checker {
                     .collect(Collectors.toUnmodifiableSet());
 
             if (actualProperties.size() != expectedProperties.size()) {
-                feedback = "For number {0} expected number of properties is {1} but actual number of properties is {2}. " +
+                feedback = "For the number {0} the expected number of properties is {1} but the actual number of properties is {2}. " +
                         "Expected properties are {3}. Actual properties are {4}";
                 parameters = new Object[]{expectedNumber, expectedProperties.size(),
                         actualProperties.size(), expectedProperties, actualProperties};
@@ -102,7 +102,7 @@ public class ListChecker extends Checker {
             }
 
             if (!Set.copyOf(actualProperties).equals(expectedProperties)) {
-                feedback = "For number {0} expected properties are {1}. Actual properties are {2}.";
+                feedback = "For the number {0} the expected properties are {1}. The actual properties are {2}.";
                 parameters = new Object[]{expectedNumber, expectedProperties, actualProperties};
             }
         }
