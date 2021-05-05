@@ -1,6 +1,6 @@
 package util;
 
-public class TextChecker extends AbstractChecker {
+public class TextChecker extends Checker {
 
     public TextChecker(String expected) {
         this(expected, "Expected that the output contains \"{2}\".");

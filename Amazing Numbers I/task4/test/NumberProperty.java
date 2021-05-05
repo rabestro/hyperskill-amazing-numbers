@@ -1,28 +1,21 @@
 import java.util.Optional;
 import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
+import java.util.stream.LongStream;
 
-public enum NumberProperties implements LongPredicate {
-    EVEN(x -> x % 2 == 0),
-    ODD(x -> x % 2 != 0),
+import static java.lang.Character.getNumericValue;
+
+public enum NumberProperty implements LongPredicate {
     BUZZ(x -> x % 7 == 0 || x % 10 == 7),
-    DUCK(x -> String.valueOf(x).indexOf('0') != -1),
+    DUCK(number -> digits(number).anyMatch(digit -> digit == 0)),
     PALINDROMIC(number -> {
         final var digits = String.valueOf(number);
         return new StringBuilder(digits).reverse().toString().equals(digits);
     }),
-    GAPFUL(number -> {
-        if (number < 100) {
-            return false;
-        }
-        long last = number % 10;
-        long first = number / 100;
-        while (first > 10) {
-            first /= 10;
-        }
-        long divider = first * 10 + last;
-        return number % divider == 0;
-    });
+    GAPFUL(number -> number > 100 &&
+            number % (getNumericValue(String.valueOf(number).charAt(0)) * 10L + number % 10) == 0),
+    EVEN(x -> x % 2 == 0),
+    ODD(x -> x % 2 != 0);
 
     private final LongPredicate hasProperty;
     private final Pattern pattern = Pattern.compile(
@@ -30,8 +23,12 @@ public enum NumberProperties implements LongPredicate {
             Pattern.CASE_INSENSITIVE
     );
 
-    NumberProperties(LongPredicate hasProperty) {
+    NumberProperty(LongPredicate hasProperty) {
         this.hasProperty = hasProperty;
+    }
+
+    private static LongStream digits(long number) {
+        return Long.toString(number).chars().mapToLong(Character::getNumericValue);
     }
 
     @Override
@@ -42,8 +39,7 @@ public enum NumberProperties implements LongPredicate {
     public Optional<Boolean> extractValue(String output) {
         final var matcher = pattern.matcher(output);
         matcher.find();
-        return Optional
-                .ofNullable(matcher.group("value"))
-                .map(Boolean::valueOf);
+        return Optional.ofNullable(matcher.group("value")).map(Boolean::valueOf);
     }
+
 }

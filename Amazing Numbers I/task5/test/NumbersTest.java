@@ -3,15 +3,13 @@ import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import util.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
-
-import static java.util.stream.IntStream.range;
 
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
@@ -41,7 +39,7 @@ public final class NumbersTest extends StageTest {
                             "enter 0 to exit",
                             "Display the instructions on how to exit"));
 
-    private static final Checker ASK_REQUEST = new RegexChecker(
+    private static final Checker ASK_REQUEST = new TextChecker(
             "enter a request",
             "The program should ask a user to enter a request."
     );
@@ -50,18 +48,13 @@ public final class NumbersTest extends StageTest {
             "The first parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_SECOND = new RegexChecker(
-            "The second parameter should be a natural number",
+            "The second (parameter|number) should be a natural number",
             "The second parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_PROPERTY = new RegexChecker(
             "The property .+ is wrong",
             "The request: \"{0}\" has one wrong property. "
                     + "Expected message: \"property ... is wrong\"."
-    );
-    private static final Checker ERROR_PROPERTIES = new RegexChecker(
-            "The properties .+ are wrong",
-            "The request: \"{0}\" has two or more incorrect properties. "
-                    + "Expected that error message contains: \"properties ... are wrong\"."
     );
     private static final Checker HELP_PROPERTIES = new TextChecker(
             "Available properties"
@@ -78,11 +71,6 @@ public final class NumbersTest extends StageTest {
     private static final Checker PROPERTIES_OF = new RegexChecker(
             "properties of \\d",
             "The first line of number's properties should contain \"Properties of {0}\"."
-    );
-    private static final Checker MUTUALLY_EXCLUSIVE = new TextChecker(
-            "The request contains mutually exclusive properties",
-            "The request contains mutually exclusive properties. "
-                    + "The program should cancel the request and warn the user."
     );
     private static final Checker RUNNING = new Checker(Predicate.not(UserProgram::isFinished),
             "The program should continue to work till the user enter \"0\"."
@@ -267,8 +255,5 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
-
-
-
 
 }

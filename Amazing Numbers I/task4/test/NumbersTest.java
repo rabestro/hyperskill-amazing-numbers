@@ -5,10 +5,12 @@ import util.*;
 
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.LongStream;
 
 public final class NumbersTest extends StageTest {
     private static final Random random = new Random();
+
     private static final int NEGATIVE_NUMBERS_TESTS = 5;
     private static final int FIRST_NUMBERS = 15;
     private static final int RANDOM_TESTS = 10;
@@ -17,45 +19,46 @@ public final class NumbersTest extends StageTest {
 
     private static final Checker WELCOME = new TextChecker("Welcome to Amazing Numbers!");
 
+    private static final String EXPLAIN = "The program should explain this in the help.";
     private static final Function<UserProgram, UserProgram> HELP =
             new TextChecker("Supported requests")
                     .andThen(new RegexChecker(
-                            "(one|a) natural number .* properties",
-                            "Display the instruction on how to use the program")
-                    )
-                    .andThen(new RegexChecker(
+                            "(one|a) natural number",
+                            "In this stage, a user can enter one number to print a card. " + EXPLAIN))
+                    .andThen(new TextChecker(
                             "two natural numbers",
-                            "In this stage the user may enter two numbers. " +
-                                    "The program should explain this in help."
-                    ))
-                    .andThen(new RegexChecker(
-                            "0 for( the)? exit",
-                            "Display the instruction on how to exit")
-                    );
-    private static final Checker ASK_REQUEST = new RegexChecker(
-            "enter( a)? request",
-            "The program should ask the user to enter a request."
+                            "In this stage, a user can enter two numbers to print a list. " + EXPLAIN))
+                    .andThen(new TextChecker(
+                            "enter 0 to exit",
+                            "Display the instructions on how to exit"));
+
+    private static final Checker ASK_REQUEST = new TextChecker(
+            "enter a request",
+            "The program should ask a user to enter a request."
     );
     private static final Checker ERROR_FIRST = new RegexChecker(
-            "number is( not|n't) (natural|positive)",
-            "Number {0} is not natural. The program should print an error message."
+            "The first (parameter|number) should be a natural number or zero",
+            "The first parameter \"{0}\" is wrong. The program should print an error message."
     );
     private static final Checker ERROR_SECOND = new RegexChecker(
-            "number is( not|n't) natural|count should be( a)? (natural|positive) number.",
-            "Number {0} is not natural. The program should print an error message."
-    );
-    private static final Checker PROPERTIES_OF = new RegexChecker(
-            "properties of \\d",
-            "The first line of number''s properties should contains \"Properties of {0}\"."
-    );
-    private static final Checker RUNNING = new RunnerChecker(
-            "The program should continue to work till the user enter \"0\"."
-    );
-    private static final Checker FINISHED = new FinishChecker(
-            "The program should finish after the user enter \"0\"."
+            "The second (parameter|number) should be a natural number",
+            "The second parameter \"{0}\" is wrong. The program should print an error message."
     );
 
+    private static final Checker PROPERTIES_OF = new RegexChecker(
+            "properties of \\d",
+            "The first line of number's properties should contain \"Properties of {0}\"."
+    );
+    private static final Checker RUNNING = new Checker(Predicate.not(UserProgram::isFinished),
+            "The program should continue to work till the user enter \"0\"."
+    );
+    private static final Checker FINISHED = new Checker(UserProgram::isFinished,
+            "The program should finish when the user entered \"0\"."
+    );
     private final UserProgram program = new UserProgram();
+
+
+    // Stage #3
 
     @DynamicTest(order = 5)
     CheckResult welcomeTest() {
@@ -80,7 +83,6 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_REQUEST)
                 .execute(negativeNumber)
                 .check(ERROR_FIRST)
-                .check(HELP)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
@@ -88,7 +90,7 @@ public final class NumbersTest extends StageTest {
                 .result();
     }
 
-    @DynamicTest(repeat = RANDOM_TESTS, order = 10)
+    @DynamicTest(repeat = RANDOM_TESTS, order = 15)
     CheckResult notNaturalSecondNumberTest() {
         int first = 1 + random.nextInt(Short.MAX_VALUE);
         int negativeSecond = -random.nextInt(Short.MAX_VALUE);
@@ -99,13 +101,14 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_REQUEST)
                 .execute(first + " " + negativeSecond)
                 .check(ERROR_SECOND)
-                .check(HELP)
                 .check(RUNNING)
                 .check(ASK_REQUEST)
                 .execute(0)
                 .check(FINISHED)
                 .result();
     }
+
+    // Stage #4
 
     @DynamicTest(order = 20)
     CheckResult naturalNumbersTest() {
@@ -153,7 +156,7 @@ public final class NumbersTest extends StageTest {
                 .toArray(Long[][]::new);
     }
 
-    @DynamicTest(data = "getRandomTwo", order = 50)
+    @DynamicTest(data = "getRandomTwo", order = 44)
     CheckResult twoRandomNumbersTest(long start, long count) {
         return program
                 .start()
@@ -168,5 +171,6 @@ public final class NumbersTest extends StageTest {
                 .check(FINISHED)
                 .result();
     }
+
 
 }

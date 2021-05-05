@@ -2,7 +2,7 @@ package util;
 
 import static java.util.function.Predicate.not;
 
-public class LinesChecker extends AbstractChecker {
+public class LinesChecker extends Checker {
 
     public LinesChecker(final long expected) {
         super("Expected {0} non blank lines but actual output contains {1} lines.");

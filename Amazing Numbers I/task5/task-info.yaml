@@ -12,3 +12,13 @@ files:
   visible: true
 - name: test/util/UserProgram.java
   visible: true
+- name: test/ListChecker.java
+  visible: true
+- name: test/NumberProperty.java
+  visible: true
+- name: test/NumbersTest.java
+  visible: true
+- name: test/PropertiesChecker.java
+  visible: true
+- name: test/Request.java
+  visible: true

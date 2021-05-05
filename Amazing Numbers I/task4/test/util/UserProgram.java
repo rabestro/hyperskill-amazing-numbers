@@ -5,9 +5,8 @@ import org.hyperskill.hstest.testing.TestedProgram;
 
 import java.util.function.Function;
 
-public final class UserProgram {
+public class UserProgram {
     private TestedProgram program;
-    private CheckResult result = CheckResult.correct();
 
     private Object input;
     private String output;
@@ -15,12 +14,7 @@ public final class UserProgram {
     public UserProgram start(String... args) {
         program = new TestedProgram();
         output = program.start(args);
-        result = CheckResult.correct();
         return this;
-    }
-
-    public void setResult(CheckResult result) {
-        this.result = result;
     }
 
     public UserProgram check(final Function<UserProgram, UserProgram> checker) {
@@ -28,7 +22,7 @@ public final class UserProgram {
     }
 
     public CheckResult result() {
-        return result;
+        return CheckResult.correct();
     }
 
     public UserProgram execute(Object userInput) {
@@ -45,8 +39,7 @@ public final class UserProgram {
         return input;
     }
 
-    public TestedProgram getTestedProgram() {
-        return program;
+    public boolean isFinished() {
+        return program.isFinished();
     }
-
 }

@@ -2,3 +2,25 @@ type: edu
 files:
 - name: src/numbers/NumberProperty.java
   visible: true
+- name: test/util/Checker.java
+  visible: true
+- name: test/util/LinesChecker.java
+  visible: true
+- name: test/util/RegexChecker.java
+  visible: true
+- name: test/util/TextChecker.java
+  visible: true
+- name: test/util/UserProgram.java
+  visible: true
+- name: test/ListChecker.java
+  visible: true
+- name: test/NumberProperty.java
+  visible: true
+- name: test/NumbersTest.java
+  visible: true
+- name: test/PropertiesChecker.java
+  visible: true
+- name: test/Request.java
+  visible: true
+- name: src/numbers/Main.java
+  visible: true
