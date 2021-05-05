@@ -26,8 +26,11 @@ public final class NumbersTest extends StageTest {
             "properties of \\d",
             "The first line of number''s properties should contains \"Properties of {0}\"."
     );
-    private static final Checker PROFILE_LINES = new LinesChecker(NumberProperties.values().length + 1);
+    private static final Checker PROFILE_LINES = new LinesChecker(NumberProperty.values().length + 1);
 
+    private static final Checker FINISHED = new Checker(UserProgram::isFinished,
+            "The program should finish when the user entered \"0\"."
+    );
     private final long[] notNaturalNumbers = {0, -1, -2, -3, -4, -5};
 
     @DynamicTest(data = "notNaturalNumbers", order = 10)
@@ -37,7 +40,7 @@ public final class NumbersTest extends StageTest {
                 .check(ASK_FOR_NUMBER)
                 .execute(number)
                 .check(ERROR_MESSAGE)
-                .finished()
+                .check(FINISHED)
                 .result();
     }
 
@@ -57,7 +60,7 @@ public final class NumbersTest extends StageTest {
                 .check(PROPERTIES_OF)
                 .check(PROFILE_LINES)
                 .check(new PropertiesChecker(number))
-                .finished()
+                .check(FINISHED)
                 .result();
     }
 
