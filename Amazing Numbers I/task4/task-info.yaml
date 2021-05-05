@@ -1,1 +1,4 @@
 type: edu
+files:
+- name: src/numbers/NumberProperty.java
+  visible: true

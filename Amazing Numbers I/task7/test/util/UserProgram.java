@@ -7,7 +7,6 @@ import java.util.function.Function;
 
 public class UserProgram {
     private TestedProgram program;
-    private CheckResult result = CheckResult.correct();
 
     private Object input;
     private String output;
@@ -15,7 +14,6 @@ public class UserProgram {
     public UserProgram start(String... args) {
         program = new TestedProgram();
         output = program.start(args);
-        result = CheckResult.correct();
         return this;
     }
 
@@ -24,7 +22,7 @@ public class UserProgram {
     }
 
     public CheckResult result() {
-        return result;
+        return CheckResult.correct();
     }
 
     public UserProgram execute(Object userInput) {

@@ -1,4 +1,4 @@
-import numbers.NumberProperties;
+import numbers.NumberProperty;
 import util.Checker;
 import util.UserProgram;
 
@@ -20,6 +20,10 @@ public class ListChecker extends Checker {
     private final long expectedCount;
     private final long[] expectedList;
 
+    public ListChecker(Request request) {
+        this(request.getStart(), request.getCount(), request.getProperties());
+    }
+
     public ListChecker(long start, long count) {
         this(start, count, new String[0]);
     }
@@ -31,19 +35,20 @@ public class ListChecker extends Checker {
     public ListChecker(long start, long count, String[] queries) {
         super("The list is incorrect");
         this.validator = this::test;
-        this.expectedList = getList(start, count, queries);
+        this.expectedList = getExpectedList(start, count, queries);
         this.expectedCount = count;
     }
 
-    private static long[] getList(long start, long count, String[] queries) {
+    private static long[] getExpectedList(long start, long count, String[] queries) {
         final var condition = Arrays.stream(queries).map(query -> {
             final var isNegative = query.startsWith("-");
             final var name = isNegative ? query.substring(1) : query;
-            final var property = NumberProperties.valueOf(name.toUpperCase());
+            final var property = NumberProperty.valueOf(name.toUpperCase());
             return isNegative ? property.negate() : property;
         }).reduce(number -> true, LongPredicate::and);
 
-        return LongStream.iterate(start, n -> n > 0, n -> n + 1)
+        return LongStream
+                .iterate(start, n -> n > 0, n -> n + 1)
                 .filter(condition).limit(count).toArray();
     }
 
@@ -82,14 +87,14 @@ public class ListChecker extends Checker {
                     .collect(Collectors.toUnmodifiableList());
 
             final var expectedProperties = Arrays
-                    .stream(NumberProperties.values())
+                    .stream(NumberProperty.values())
                     .filter(property -> property.test(expectedNumber))
                     .map(Enum::name)
                     .map(String::toLowerCase)
                     .collect(Collectors.toUnmodifiableSet());
 
             if (actualProperties.size() != expectedProperties.size()) {
-                feedback = "For number {0} expected number of properties is {1} but actual number of properties is {2}. " +
+                feedback = "For the number {0} the expected number of properties is {1} but the actual number of properties is {2}. " +
                         "Expected properties are {3}. Actual properties are {4}";
                 parameters = new Object[]{expectedNumber, expectedProperties.size(),
                         actualProperties.size(), expectedProperties, actualProperties};
@@ -97,7 +102,7 @@ public class ListChecker extends Checker {
             }
 
             if (!Set.copyOf(actualProperties).equals(expectedProperties)) {
-                feedback = "For number {0} expected properties are {1}. Actual properties are {2}.";
+                feedback = "For the number {0} the expected properties are {1}. The actual properties are {2}.";
                 parameters = new Object[]{expectedNumber, expectedProperties, actualProperties};
             }
         }
